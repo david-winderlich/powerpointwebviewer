@@ -7,9 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Einstellungen: Eckenradius und Hintergrundfarbe der Folie hinter den Ecken */
+    :root { --corner-radius: 42px; --slide-bg: #ffffff; }
     body {
       width: 100%; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden;
-      background: #ffffff;
+      background: var(--slide-bg);
       padding: 0;
     }
 
@@ -162,8 +164,10 @@
       width: 100%;
       height: 100%;
       background: #f0f2f5;
-      border-radius: 4px;
+      border-radius: var(--corner-radius);
       overflow: hidden;
+      isolation: isolate;          /* sorgt dafuer, dass auch skalierte Inhalte sauber abgerundet werden */
+      transform: translateZ(0);
     }
 
     /* iframe */
