@@ -106,25 +106,28 @@
     /* Toggle button (when controls are hidden) */
     #toggleBtn {
       position: absolute;
-      top: 6px;
-      right: 6px;
+      top: 4px;
+      right: 4px;
       z-index: 101;
-      width: 20px;
-      height: 20px;
-      padding: 0;
+      /* 24px hit area, but only a 10px circle is drawn (background-clip) */
+      width: 24px;
+      height: 24px;
+      padding: 7px;
       border-radius: 50%;
       border: none;
-      background: rgba(255,255,255,0.85);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      background: rgba(255,255,255,0.9);
+      background-clip: content-box;
+      color: #555;
       cursor: pointer;
-      font-size: 11px;
-      opacity: 0.45;
+      font-size: 9px;
+      line-height: 1;
+      opacity: 0;               /* invisible until the mouse is over it */
       display: none;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
+      transition: opacity 0.2s;
     }
-    #toggleBtn:hover { background: rgba(255,255,255,1); opacity: 1; }
+    #toggleBtn:hover { opacity: 1; }
     #toggleBtn.visible { display: flex; }
 
     /* Environment badge */
