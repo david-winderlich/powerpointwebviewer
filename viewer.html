@@ -15,9 +15,12 @@
     :root {
       --rand: none;                 /* Randtextur: url(rand/<farbe>.png) */
       --rand-ersatz: #3f8f6b;       /* Farbe, solange das Bild fehlt */
-      /* Blätterpfeile in den unteren Ecken von #glas, Angaben in pt */
-      --nav-groesse: 26;            /* Durchmesser eines Pfeils */
-      --nav-abstand: 10;            /* Abstand zur Ecke der Glasfläche */
+      /* Blätterpfeile im farbigen Rand unten links und unten rechts, Angaben in pt.
+         Der Rand ist 9 pt breit; die Pfeile müssen hineinpassen. */
+      --nav-breite: 14;             /* Breite eines Pfeils */
+      --nav-hoehe: 7;               /* Höhe eines Pfeils */
+      --nav-seite: 2;               /* Abstand zum linken bzw. rechten Folienrand */
+      --nav-unten: 1;               /* Abstand zum unteren Folienrand */
     }
     html, body { margin: 0; height: 100%; overflow: hidden; }
     body {
@@ -214,20 +217,20 @@
       background: transparent;
     }
 
-    /* Blätterpfeile: ‹ unten links, › unten rechts. Unsichtbar, bis die Maus
-       in die Nähe kommt (Klasse .nah am Knopf, gesetzt per Skript). */
+    /* Blätterpfeile: ‹ unten links, › unten rechts, im farbigen Rand außerhalb
+       von #glas. Unsichtbar, bis die Maus in die Nähe kommt (Klasse .nah). */
     .nav-btn {
       position: absolute;
-      bottom: calc(var(--nav-abstand)/960*100vw);
-      width: calc(var(--nav-groesse)/960*100vw);
-      height: calc(var(--nav-groesse)/960*100vw);
+      bottom: calc(var(--nav-unten)/540*100vh);
+      width: calc(var(--nav-breite)/960*100vw);
+      height: calc(var(--nav-hoehe)/540*100vh);
       padding: 0;
       border: none;
-      border-radius: 50%;
+      border-radius: calc(var(--nav-hoehe)/540*100vh);
       background: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
       color: #334;
-      font: 600 calc(17/960*100vw)/1 'Segoe UI', Arial, sans-serif;
+      font: 700 calc(8/540*100vh)/1 'Segoe UI', Arial, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -236,9 +239,9 @@
       transition: opacity 0.25s ease;
       z-index: 90;
     }
-    #navPrev { left: calc(var(--nav-abstand)/960*100vw); padding-right: 0.15em; }
-    #navNext { right: calc(var(--nav-abstand)/960*100vw); padding-left: 0.15em; }
-    .nav-btn.nah { opacity: 0.75; }
+    #navPrev { left: calc(var(--nav-seite)/960*100vw); }
+    #navNext { right: calc(var(--nav-seite)/960*100vw); }
+    .nav-btn.nah { opacity: 0.8; }
     .nav-btn:hover, .nav-btn:focus-visible { opacity: 1; background: #fff; }
 
     /* Kurze Meldung, z. B. wenn das Blättern nicht möglich ist */
@@ -398,12 +401,15 @@
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-presentation allow-downloads allow-modals"
           allowtransparency="true"></iframe>
 
-  <!-- Blätterpfeile und Hinweis -->
-  <button id="navPrev" class="nav-btn" type="button" title="Vorherige Folie" aria-label="Vorherige Folie">‹</button>
-  <button id="navNext" class="nav-btn" type="button" title="Nächste Folie" aria-label="Nächste Folie">›</button>
+  <!-- Hinweis beim Blättern -->
   <div id="navHinweis" role="status"></div>
 
 </div><!-- /glas -->
+
+  <!-- Blätterpfeile im farbigen Rand (außerhalb der Glasfläche) -->
+  <button id="navPrev" class="nav-btn" type="button" title="Vorherige Folie" aria-label="Vorherige Folie">‹</button>
+  <button id="navNext" class="nav-btn" type="button" title="Nächste Folie" aria-label="Nächste Folie">›</button>
+
 </div><!-- /appWrapper -->
 
   <script>
@@ -535,8 +541,12 @@
     document.documentElement.addEventListener('mouseleave', naeheAus);
 
     // Page Down im Add-in selbst (wenn das Add-in den Fokus hat)
+    // Nur echte Texteingaben (z. B. das URL-Feld) ausnehmen, nicht Checkboxen oder Auswahlfelder
+    const TEXT_TYPEN = /^(text|search|email|number|password|tel|url|date|datetime-local|month|time|week)$/i;
     function istEingabe(el) {
-      return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+      if (!el) return false;
+      if (el.isContentEditable || el.tagName === 'TEXTAREA') return true;
+      return el.tagName === 'INPUT' && TEXT_TYPEN.test(el.type || 'text');
     }
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'PageDown' || istEingabe(e.target)) return;
@@ -575,10 +585,23 @@
         var s = doc.createElement('script');
         s.id = 'ppt-navigation';
         s.src = NAV_SKRIPT;
+        s.onerror = function () { pageDownDirekt(doc); };   // Rückfall, falls die Datei nicht lädt
         (doc.head || doc.documentElement).appendChild(s);
       } catch (e) {
         // andere Domain: kein Zugriff, dann nur Pfeile im Add-in
       }
+    }
+
+    // Rückfall: Page Down direkt in der geladenen Seite abfangen (nur gleiche Domain)
+    function pageDownDirekt(doc) {
+      try {
+        doc.defaultView.addEventListener('keydown', function (e) {
+          if (e.key !== 'PageDown' || istEingabe(e.target) || istEingabe(doc.activeElement)) return;
+          e.preventDefault();
+          e.stopPropagation();
+          if (!e.repeat) blaettern('weiter');
+        }, true);
+      } catch (e) { /* kein Zugriff */ }
     }
 
     // ─── Frame scaling ────────────────────────────────────

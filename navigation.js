@@ -12,8 +12,9 @@
  *   <script src="https://david-winderlich.github.io/powerpointwebviewer/navigation.js"></script>
  *
  * Bewusst NICHT weitergeleitet: Pfeiltasten, Leertaste, Page Up. Die gehören der
- * Simulation. In Eingabefeldern (input, textarea, select, contenteditable) wird
- * auch Page Down nicht weitergeleitet.
+ * Simulation. In Texteingaben (Textfelder, Zahlenfelder, textarea, contenteditable)
+ * wird auch Page Down nicht weitergeleitet. Schalter, Checkboxen, Schieberegler,
+ * Knöpfe und Auswahlfelder blättern dagegen weiter.
  *
  * Nachricht an den Viewer: { typ: 'folie', richtung: 'weiter' }
  */
@@ -28,10 +29,13 @@
     try { window.parent.postMessage(nachricht, '*'); } catch (e) {}
   }
 
+  // Nur echte Texteingaben ausnehmen. Checkboxen, Schieberegler usw. sind auch
+  // <input>, sollen Page Down aber nicht verschlucken.
+  var TEXT_TYPEN = /^(text|search|email|number|password|tel|url|date|datetime-local|month|time|week)$/i;
   function istEingabe(el) {
     if (!el) return false;
-    var t = el.tagName;
-    return t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || el.isContentEditable;
+    if (el.isContentEditable || el.tagName === 'TEXTAREA') return true;
+    return el.tagName === 'INPUT' && TEXT_TYPEN.test(el.type || 'text');
   }
 
   window.addEventListener('keydown', function (e) {

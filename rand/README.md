@@ -36,12 +36,14 @@ solange das Bild fehlt.
 Weil das Add-in die ganze Folie bedeckt, kann man nicht mehr auf die Folie klicken.
 Dafür gibt es:
 
-- zwei Pfeile in den unteren Ecken der Glasfläche (‹ zurück, › weiter). Sie werden
-  erst sichtbar, wenn die Maus in die Nähe kommt. Größe und Abstand stehen oben in
-  `viewer.html` (`--nav-groesse`, `--nav-abstand`, Angaben in pt).
-- die Taste **Page Down** für „weiter“, auch wenn die Simulation den Fokus hat.
-  Dafür bindet der Viewer `../navigation.js` automatisch in die geladene Seite ein.
-  Pfeiltasten, Leertaste und Page Up bleiben bei der Simulation.
+- zwei kleine Pfeile im farbigen Rand unten links (‹ zurück) und unten rechts
+  (› weiter). Sie werden erst sichtbar, wenn die Maus in die Nähe kommt. Größe und
+  Abstand stehen oben in `viewer.html` (`--nav-breite`, `--nav-hoehe`, `--nav-seite`,
+  `--nav-unten`, Angaben in pt).
+- die Taste **Page Down** für „weiter“, auch wenn die Simulation den Fokus hat, z. B.
+  nach einem Klick auf einen Schalter. Dafür bindet der Viewer `../navigation.js`
+  automatisch in die geladene Seite ein. Pfeiltasten, Leertaste und Page Up bleiben
+  bei der Simulation, in Textfeldern wird Page Down nicht abgefangen.
 
 ## Maße der Glasfläche (Folie 960 × 540 pt)
 
