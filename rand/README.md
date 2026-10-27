@@ -40,10 +40,11 @@ Dafür gibt es:
   (› weiter). Sie werden erst sichtbar, wenn die Maus in die Nähe kommt. Größe und
   Abstand stehen oben in `viewer.html` (`--nav-breite`, `--nav-hoehe`, `--nav-seite`,
   `--nav-unten`, Angaben in pt).
-- die Taste **Page Down** für „weiter“, auch wenn die Simulation den Fokus hat, z. B.
-  nach einem Klick auf einen Schalter. Dafür bindet der Viewer `../navigation.js`
-  automatisch in die geladene Seite ein. Pfeiltasten, Leertaste und Page Up bleiben
-  bei der Simulation, in Textfeldern wird Page Down nicht abgefangen.
+- die Taste **N** für „weiter“, auch wenn die Simulation den Fokus hat, z. B. nach
+  einem Klick auf einen Schalter. Für den Presenter (Logitech Spotlight) in der
+  Logitech-App bei „Weiter halten“ die Taste N eintragen. Alle anderen Tasten
+  (Pfeiltasten, Leertaste, Page Up/Down) bleiben bei der Simulation. In Textfeldern
+  wird N nicht abgefangen, dort kann man normal tippen. Cmd/Ctrl/Alt+N bleiben frei.
 
 Zur Fehlersuche gibt es in der Steuerleiste den Haken **Tastentest**. Er zeigt in der
 Mitte der Folie an, welche Tasten im Add-in oder in der Simulation ankommen und ob

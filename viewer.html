@@ -508,8 +508,8 @@
     applyFarbe(new URLSearchParams(location.search).get('farbe') || STANDARD_FARBE);
 
     // ─── Folien blättern ──────────────────────────────────
-    // Pfeile ‹ › in den unteren Ecken und die Taste Page Down (weiter).
-    // Pfeiltasten und Leertaste bleiben bewusst bei der Simulation.
+    // Pfeile ‹ › in den unteren Ecken und die Taste N (weiter).
+    // Alle anderen Tasten (Pfeiltasten, Leertaste, Page Down …) bleiben bei der Simulation.
     const navPrev = document.getElementById('navPrev');
     const navNext = document.getElementById('navNext');
     const navHinweis = document.getElementById('navHinweis');
@@ -600,21 +600,22 @@
     });
     document.documentElement.addEventListener('mouseleave', naeheAus);
 
-    // Page Down im Add-in selbst (wenn das Add-in den Fokus hat)
-    // Nur echte Texteingaben (z. B. das URL-Feld) ausnehmen, nicht Checkboxen oder Auswahlfelder
+    // Taste N im Add-in selbst (wenn das Add-in den Fokus hat).
+    // In Texteingaben (z. B. dem URL-Feld) wird N nicht abgefangen, man kann normal tippen.
+    // Checkboxen, Schieberegler usw. sind auch <input>, zählen aber nicht als Texteingabe.
     const TEXT_TYPEN = /^(text|search|email|number|password|tel|url|date|datetime-local|month|time|week)$/i;
     function istEingabe(el) {
       if (!el) return false;
       if (el.isContentEditable || el.tagName === 'TEXTAREA') return true;
       return el.tagName === 'INPUT' && TEXT_TYPEN.test(el.type || 'text');
     }
-    // Page Down erkennen, auch wenn ein Gerät nur code oder keyCode richtig setzt
-    function istPageDown(e) {
-      return e.key === 'PageDown' || e.code === 'PageDown' || e.keyCode === 34;
+    // Weiter-Taste: n oder N, aber ohne Cmd/Ctrl/Alt (Tastenkürzel bleiben frei)
+    function istWeiterTaste(e) {
+      return (e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && !e.altKey;
     }
     document.addEventListener('keydown', function (e) {
       testLog('Add-in:     ' + tasteBeschreiben(e));
-      if (!istPageDown(e) || istEingabe(e.target)) return;
+      if (!istWeiterTaste(e) || istEingabe(e.target)) return;
       e.preventDefault();
       if (!e.repeat) blaettern('weiter');
     }, true);
@@ -640,12 +641,12 @@
     });
 
     // Seiten auf derselben Domain (david-winderlich.github.io): Der Viewer fängt
-    // Page Down direkt in der Seite ab und bindet navigation.js nur noch für die
+    // die Taste N direkt in der Seite ab und bindet navigation.js nur noch für die
     // Mausposition ein. Seiten von anderen Domains können navigation.js selbst
-    // einbinden; dann übernimmt das Skript auch Page Down.
+    // einbinden; dann übernimmt das Skript auch die Taste N.
     // NAV_VERSION bei Änderungen an navigation.js erhöhen, damit kein alter
     // Zwischenspeicher-Stand geladen wird.
-    const NAV_VERSION = '3';
+    const NAV_VERSION = '4';
     const NAV_SKRIPT = new URL('navigation.js?v=' + NAV_VERSION, location.href).href;
     function navigationEinbinden() {
       var doc;
@@ -653,10 +654,10 @@
         doc = webFrame.contentDocument;
         if (!doc || !doc.documentElement) return;
       } catch (e) {
-        testLog('Seite von anderer Domain: Page Down nur mit eigener navigation.js');
+        testLog('Seite von anderer Domain: Taste N nur mit eigener navigation.js');
         return;   // andere Domain: kein Zugriff, dann nur Pfeile im Add-in
       }
-      pageDownDirekt(doc);
+      weiterTasteDirekt(doc);
       try {
         if (doc.getElementById('ppt-navigation')) return;
         doc.defaultView.__pptNavigationDirekt = true;   // navigation.js: Tasten nicht doppelt
@@ -667,15 +668,15 @@
       } catch (e) { /* ohne Skript fehlt nur das Einblenden über der Seite */ }
     }
 
-    // Page Down direkt in der geladenen Seite abfangen (nur gleiche Domain)
-    function pageDownDirekt(doc) {
+    // Taste N direkt in der geladenen Seite abfangen (nur gleiche Domain)
+    function weiterTasteDirekt(doc) {
       try {
         var win = doc.defaultView;
-        if (win.__pptPageDownDirekt) return;
-        win.__pptPageDownDirekt = true;
+        if (win.__pptWeiterTasteDirekt) return;
+        win.__pptWeiterTasteDirekt = true;
         win.addEventListener('keydown', function (e) {
           testLog('Simulation: ' + tasteBeschreiben(e));
-          if (!istPageDown(e)) return;
+          if (!istWeiterTaste(e)) return;
           if (istEingabe(e.target) || istEingabe(doc.activeElement)) {
             testLog('            Textfeld hat den Fokus, nicht abgefangen');
             return;
@@ -684,7 +685,7 @@
           e.stopPropagation();
           if (!e.repeat) blaettern('weiter');
         }, true);
-        testLog('Page Down in der Seite aktiv');
+        testLog('Taste N in der Seite aktiv');
       } catch (e) {
         testLog('Kein Zugriff auf die Seite: ' + e.message);
       }
