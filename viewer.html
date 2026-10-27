@@ -244,25 +244,6 @@
     #navPrev { left: calc(var(--nav-seite)/960*100vw); }
     #navNext { right: calc(var(--nav-seite)/960*100vw); }
 
-    /* Tastentest: zeigt an, welche Tasten wo ankommen (Fehlersuche) */
-    #tastenTest {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      min-width: 320px;
-      max-width: 90%;
-      padding: 10px 14px;
-      border-radius: 10px;
-      background: rgba(20, 24, 32, 0.88);
-      color: #e8ecf2;
-      font: 12px/1.5 Menlo, Consolas, monospace;
-      white-space: pre;
-      pointer-events: none;
-      z-index: 99;
-    }
-    #tastenTest[hidden] { display: none; }
-    .chk { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #555; white-space: nowrap; cursor: pointer; }
     .nav-btn.nah { opacity: 0.8; }
     .nav-btn:hover, .nav-btn:focus-visible { opacity: 1; background: #fff; }
 
@@ -386,7 +367,6 @@
     <span class="icon">🌐</span>
     <input id="urlInput" type="text" placeholder="Enter website URL (e.g. https://example.com)" />
     <select id="farbeSelect" class="select" title="Rahmenfarbe"></select>
-    <label class="chk" title="Zeigt an, welche Tasten ankommen (zur Fehlersuche)"><input type="checkbox" id="tastenTestCheck"> Tastentest</label>
     <button class="btn btn-primary" onclick="loadUrl()">Load</button>
     <button class="btn btn-icon" onclick="reloadFrame()" title="Reload page">↻</button>
     <button class="btn btn-icon" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
@@ -426,7 +406,6 @@
 
   <!-- Hinweis beim Blättern -->
   <div id="navHinweis" role="status"></div>
-  <div id="tastenTest" hidden></div>
 
 </div><!-- /glas -->
 
@@ -524,36 +503,6 @@
       hinweisTimer = setTimeout(function () { navHinweis.classList.remove('zeigen'); }, 3500);
     }
 
-    // ─── Tastentest (Fehlersuche) ─────────────────────────
-    // Zeigt die letzten Tastendrücke an: wo sie ankamen und was passiert ist.
-    // Ein- und ausschalten in der Steuerleiste, gespeichert pro Folie.
-    const tastenTest = document.getElementById('tastenTest');
-    const tastenTestCheck = document.getElementById('tastenTestCheck');
-    let tastenTestAn = false;
-    const testZeilen = [];
-    function testLog(text) {
-      if (!tastenTestAn) return;
-      var t = new Date();
-      var zeit = ('0' + t.getMinutes()).slice(-2) + ':' + ('0' + t.getSeconds()).slice(-2);
-      testZeilen.push(zeit + '  ' + text);
-      while (testZeilen.length > 8) testZeilen.shift();
-      tastenTest.textContent = 'Tastentest\n' + testZeilen.join('\n');
-    }
-    function setTastenTest(an) {
-      tastenTestAn = !!an;
-      tastenTestCheck.checked = tastenTestAn;
-      tastenTest.hidden = !tastenTestAn;
-      if (tastenTestAn && !testZeilen.length) tastenTest.textContent = 'Tastentest\nWarte auf Tastendruck …';
-    }
-    function tasteBeschreiben(e) {
-      var ziel = e.target && e.target.tagName ? e.target.tagName.toLowerCase() + (e.target.type ? '[' + e.target.type + ']' : '') : '?';
-      return 'key=' + e.key + ' code=' + e.code + ' (' + e.keyCode + ') auf ' + ziel;
-    }
-    tastenTestCheck.addEventListener('change', function () {
-      setTastenTest(tastenTestCheck.checked);
-      saveSetting('webViewerTastenTest', tastenTestAn);
-    });
-
     function blaettern(richtung) {
       var jetzt = Date.now();
       if (jetzt - letztesBlaettern < 400) return;     // gehaltene Taste nicht mehrfach auslösen
@@ -561,22 +510,16 @@
       try {
         if (!officeReady || !Office.context.document.goToByIdAsync) {
           zeigeHinweis('Blättern geht nur in PowerPoint.');
-          testLog('→ ' + richtung + ': nicht in PowerPoint');
           return;
         }
         var ziel = richtung === 'zurueck' ? Office.Index.Previous : Office.Index.Next;
         Office.context.document.goToByIdAsync(ziel, Office.GoToType.Index, function (r) {
           if (r.status === Office.AsyncResultStatus.Failed) {
-            var msg = r.error && r.error.message ? r.error.message : 'unbekannter Fehler';
-            zeigeHinweis('Blättern nicht möglich: ' + msg);
-            testLog('→ ' + richtung + ': Fehler ' + msg);
-          } else {
-            testLog('→ ' + richtung + ': PowerPoint meldet Erfolg');
+            zeigeHinweis('Blättern nicht möglich: ' + (r.error && r.error.message ? r.error.message : 'unbekannter Fehler'));
           }
         });
       } catch (e) {
         zeigeHinweis('Blättern nicht möglich: ' + e.message);
-        testLog('→ ' + richtung + ': Ausnahme ' + e.message);
       }
     }
 
@@ -614,7 +557,6 @@
       return (e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && !e.altKey;
     }
     document.addEventListener('keydown', function (e) {
-      testLog('Add-in:     ' + tasteBeschreiben(e));
       if (!istWeiterTaste(e) || istEingabe(e.target)) return;
       e.preventDefault();
       if (!e.repeat) blaettern('weiter');
@@ -654,7 +596,6 @@
         doc = webFrame.contentDocument;
         if (!doc || !doc.documentElement) return;
       } catch (e) {
-        testLog('Seite von anderer Domain: Taste N nur mit eigener navigation.js');
         return;   // andere Domain: kein Zugriff, dann nur Pfeile im Add-in
       }
       weiterTasteDirekt(doc);
@@ -675,20 +616,13 @@
         if (win.__pptWeiterTasteDirekt) return;
         win.__pptWeiterTasteDirekt = true;
         win.addEventListener('keydown', function (e) {
-          testLog('Simulation: ' + tasteBeschreiben(e));
           if (!istWeiterTaste(e)) return;
-          if (istEingabe(e.target) || istEingabe(doc.activeElement)) {
-            testLog('            Textfeld hat den Fokus, nicht abgefangen');
-            return;
-          }
+          if (istEingabe(e.target) || istEingabe(doc.activeElement)) return;
           e.preventDefault();
           e.stopPropagation();
           if (!e.repeat) blaettern('weiter');
         }, true);
-        testLog('Taste N in der Seite aktiv');
-      } catch (e) {
-        testLog('Kein Zugriff auf die Seite: ' + e.message);
-      }
+      } catch (e) { /* kein Zugriff */ }
     }
 
     // ─── Frame scaling ────────────────────────────────────
@@ -1087,7 +1021,6 @@
       try {
         var savedFarbe = Office.context.document.settings.get('webViewerFarbe');
         applyFarbe(savedFarbe || STANDARD_FARBE);
-        setTastenTest(Office.context.document.settings.get('webViewerTastenTest') === true);
       } catch (e) {
         // Silent: Office API not available (standalone/testing mode)
       }

@@ -46,10 +46,6 @@ Dafür gibt es:
   (Pfeiltasten, Leertaste, Page Up/Down) bleiben bei der Simulation. In Textfeldern
   wird N nicht abgefangen, dort kann man normal tippen. Cmd/Ctrl/Alt+N bleiben frei.
 
-Zur Fehlersuche gibt es in der Steuerleiste den Haken **Tastentest**. Er zeigt in der
-Mitte der Folie an, welche Tasten im Add-in oder in der Simulation ankommen und ob
-PowerPoint das Blättern bestätigt. Danach wieder ausschalten.
-
 ## Maße der Glasfläche (Folie 960 × 540 pt)
 
 - 9 pt Abstand links und oben, Größe 942 × 522 pt
