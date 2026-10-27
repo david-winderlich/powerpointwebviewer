@@ -45,6 +45,10 @@ Dafür gibt es:
   automatisch in die geladene Seite ein. Pfeiltasten, Leertaste und Page Up bleiben
   bei der Simulation, in Textfeldern wird Page Down nicht abgefangen.
 
+Zur Fehlersuche gibt es in der Steuerleiste den Haken **Tastentest**. Er zeigt in der
+Mitte der Folie an, welche Tasten im Add-in oder in der Simulation ankommen und ob
+PowerPoint das Blättern bestätigt. Danach wieder ausschalten.
+
 ## Maße der Glasfläche (Folie 960 × 540 pt)
 
 - 9 pt Abstand links und oben, Größe 942 × 522 pt

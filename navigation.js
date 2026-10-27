@@ -39,7 +39,9 @@
   }
 
   window.addEventListener('keydown', function (e) {
-    var richtung = TASTEN[e.key];
+    // Bei Seiten auf derselben Domain fängt der Viewer Page Down selbst ab
+    if (window.__pptNavigationDirekt) return;
+    var richtung = TASTEN[e.key] || (e.keyCode === 34 ? 'weiter' : null);
     if (!richtung || istEingabe(e.target) || istEingabe(document.activeElement)) return;
     e.preventDefault();
     e.stopPropagation();

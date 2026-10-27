@@ -230,7 +230,7 @@
       background: rgba(255, 255, 255, 0.85);
       box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
       color: #334;
-      font: 700 calc(8/540*100vh)/1 'Segoe UI', Arial, sans-serif;
+      line-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -239,8 +239,30 @@
       transition: opacity 0.25s ease;
       z-index: 90;
     }
+    /* Pfeil als Grafik: passt unabhängig von der Schrift immer ins Kästchen */
+    .nav-btn svg { display: block; height: 72%; width: auto; }
     #navPrev { left: calc(var(--nav-seite)/960*100vw); }
     #navNext { right: calc(var(--nav-seite)/960*100vw); }
+
+    /* Tastentest: zeigt an, welche Tasten wo ankommen (Fehlersuche) */
+    #tastenTest {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 320px;
+      max-width: 90%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(20, 24, 32, 0.88);
+      color: #e8ecf2;
+      font: 12px/1.5 Menlo, Consolas, monospace;
+      white-space: pre;
+      pointer-events: none;
+      z-index: 99;
+    }
+    #tastenTest[hidden] { display: none; }
+    .chk { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #555; white-space: nowrap; cursor: pointer; }
     .nav-btn.nah { opacity: 0.8; }
     .nav-btn:hover, .nav-btn:focus-visible { opacity: 1; background: #fff; }
 
@@ -364,6 +386,7 @@
     <span class="icon">🌐</span>
     <input id="urlInput" type="text" placeholder="Enter website URL (e.g. https://example.com)" />
     <select id="farbeSelect" class="select" title="Rahmenfarbe"></select>
+    <label class="chk" title="Zeigt an, welche Tasten ankommen (zur Fehlersuche)"><input type="checkbox" id="tastenTestCheck"> Tastentest</label>
     <button class="btn btn-primary" onclick="loadUrl()">Load</button>
     <button class="btn btn-icon" onclick="reloadFrame()" title="Reload page">↻</button>
     <button class="btn btn-icon" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
@@ -403,12 +426,13 @@
 
   <!-- Hinweis beim Blättern -->
   <div id="navHinweis" role="status"></div>
+  <div id="tastenTest" hidden></div>
 
 </div><!-- /glas -->
 
   <!-- Blätterpfeile im farbigen Rand (außerhalb der Glasfläche) -->
-  <button id="navPrev" class="nav-btn" type="button" title="Vorherige Folie" aria-label="Vorherige Folie">‹</button>
-  <button id="navNext" class="nav-btn" type="button" title="Nächste Folie" aria-label="Nächste Folie">›</button>
+  <button id="navPrev" class="nav-btn" type="button" title="Vorherige Folie" aria-label="Vorherige Folie"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M6.4 1.8 L3.2 5 L6.4 8.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="navNext" class="nav-btn" type="button" title="Nächste Folie" aria-label="Nächste Folie"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3.6 1.8 L6.8 5 L3.6 8.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 
 </div><!-- /appWrapper -->
 
@@ -500,6 +524,36 @@
       hinweisTimer = setTimeout(function () { navHinweis.classList.remove('zeigen'); }, 3500);
     }
 
+    // ─── Tastentest (Fehlersuche) ─────────────────────────
+    // Zeigt die letzten Tastendrücke an: wo sie ankamen und was passiert ist.
+    // Ein- und ausschalten in der Steuerleiste, gespeichert pro Folie.
+    const tastenTest = document.getElementById('tastenTest');
+    const tastenTestCheck = document.getElementById('tastenTestCheck');
+    let tastenTestAn = false;
+    const testZeilen = [];
+    function testLog(text) {
+      if (!tastenTestAn) return;
+      var t = new Date();
+      var zeit = ('0' + t.getMinutes()).slice(-2) + ':' + ('0' + t.getSeconds()).slice(-2);
+      testZeilen.push(zeit + '  ' + text);
+      while (testZeilen.length > 8) testZeilen.shift();
+      tastenTest.textContent = 'Tastentest\n' + testZeilen.join('\n');
+    }
+    function setTastenTest(an) {
+      tastenTestAn = !!an;
+      tastenTestCheck.checked = tastenTestAn;
+      tastenTest.hidden = !tastenTestAn;
+      if (tastenTestAn && !testZeilen.length) tastenTest.textContent = 'Tastentest\nWarte auf Tastendruck …';
+    }
+    function tasteBeschreiben(e) {
+      var ziel = e.target && e.target.tagName ? e.target.tagName.toLowerCase() + (e.target.type ? '[' + e.target.type + ']' : '') : '?';
+      return 'key=' + e.key + ' code=' + e.code + ' (' + e.keyCode + ') auf ' + ziel;
+    }
+    tastenTestCheck.addEventListener('change', function () {
+      setTastenTest(tastenTestCheck.checked);
+      saveSetting('webViewerTastenTest', tastenTestAn);
+    });
+
     function blaettern(richtung) {
       var jetzt = Date.now();
       if (jetzt - letztesBlaettern < 400) return;     // gehaltene Taste nicht mehrfach auslösen
@@ -507,16 +561,22 @@
       try {
         if (!officeReady || !Office.context.document.goToByIdAsync) {
           zeigeHinweis('Blättern geht nur in PowerPoint.');
+          testLog('→ ' + richtung + ': nicht in PowerPoint');
           return;
         }
         var ziel = richtung === 'zurueck' ? Office.Index.Previous : Office.Index.Next;
         Office.context.document.goToByIdAsync(ziel, Office.GoToType.Index, function (r) {
           if (r.status === Office.AsyncResultStatus.Failed) {
-            zeigeHinweis('Blättern nicht möglich: ' + (r.error && r.error.message ? r.error.message : 'unbekannter Fehler'));
+            var msg = r.error && r.error.message ? r.error.message : 'unbekannter Fehler';
+            zeigeHinweis('Blättern nicht möglich: ' + msg);
+            testLog('→ ' + richtung + ': Fehler ' + msg);
+          } else {
+            testLog('→ ' + richtung + ': PowerPoint meldet Erfolg');
           }
         });
       } catch (e) {
         zeigeHinweis('Blättern nicht möglich: ' + e.message);
+        testLog('→ ' + richtung + ': Ausnahme ' + e.message);
       }
     }
 
@@ -548,11 +608,16 @@
       if (el.isContentEditable || el.tagName === 'TEXTAREA') return true;
       return el.tagName === 'INPUT' && TEXT_TYPEN.test(el.type || 'text');
     }
+    // Page Down erkennen, auch wenn ein Gerät nur code oder keyCode richtig setzt
+    function istPageDown(e) {
+      return e.key === 'PageDown' || e.code === 'PageDown' || e.keyCode === 34;
+    }
     document.addEventListener('keydown', function (e) {
-      if (e.key !== 'PageDown' || istEingabe(e.target)) return;
+      testLog('Add-in:     ' + tasteBeschreiben(e));
+      if (!istPageDown(e) || istEingabe(e.target)) return;
       e.preventDefault();
       if (!e.repeat) blaettern('weiter');
-    });
+    }, true);
 
     // Nachrichten von navigation.js aus der geladenen Seite (nur aus dem eigenen iframe)
     window.addEventListener('message', function (e) {
@@ -574,34 +639,55 @@
       }
     });
 
-    // navigation.js automatisch in die geladene Seite einbinden. Das klappt nur bei
-    // Seiten auf derselben Domain (david-winderlich.github.io). Seiten von anderen
-    // Domains können navigation.js selbst einbinden.
-    const NAV_SKRIPT = new URL('navigation.js', location.href).href;
+    // Seiten auf derselben Domain (david-winderlich.github.io): Der Viewer fängt
+    // Page Down direkt in der Seite ab und bindet navigation.js nur noch für die
+    // Mausposition ein. Seiten von anderen Domains können navigation.js selbst
+    // einbinden; dann übernimmt das Skript auch Page Down.
+    // NAV_VERSION bei Änderungen an navigation.js erhöhen, damit kein alter
+    // Zwischenspeicher-Stand geladen wird.
+    const NAV_VERSION = '3';
+    const NAV_SKRIPT = new URL('navigation.js?v=' + NAV_VERSION, location.href).href;
     function navigationEinbinden() {
+      var doc;
       try {
-        var doc = webFrame.contentDocument;
-        if (!doc || !doc.documentElement || doc.getElementById('ppt-navigation')) return;
+        doc = webFrame.contentDocument;
+        if (!doc || !doc.documentElement) return;
+      } catch (e) {
+        testLog('Seite von anderer Domain: Page Down nur mit eigener navigation.js');
+        return;   // andere Domain: kein Zugriff, dann nur Pfeile im Add-in
+      }
+      pageDownDirekt(doc);
+      try {
+        if (doc.getElementById('ppt-navigation')) return;
+        doc.defaultView.__pptNavigationDirekt = true;   // navigation.js: Tasten nicht doppelt
         var s = doc.createElement('script');
         s.id = 'ppt-navigation';
         s.src = NAV_SKRIPT;
-        s.onerror = function () { pageDownDirekt(doc); };   // Rückfall, falls die Datei nicht lädt
         (doc.head || doc.documentElement).appendChild(s);
-      } catch (e) {
-        // andere Domain: kein Zugriff, dann nur Pfeile im Add-in
-      }
+      } catch (e) { /* ohne Skript fehlt nur das Einblenden über der Seite */ }
     }
 
-    // Rückfall: Page Down direkt in der geladenen Seite abfangen (nur gleiche Domain)
+    // Page Down direkt in der geladenen Seite abfangen (nur gleiche Domain)
     function pageDownDirekt(doc) {
       try {
-        doc.defaultView.addEventListener('keydown', function (e) {
-          if (e.key !== 'PageDown' || istEingabe(e.target) || istEingabe(doc.activeElement)) return;
+        var win = doc.defaultView;
+        if (win.__pptPageDownDirekt) return;
+        win.__pptPageDownDirekt = true;
+        win.addEventListener('keydown', function (e) {
+          testLog('Simulation: ' + tasteBeschreiben(e));
+          if (!istPageDown(e)) return;
+          if (istEingabe(e.target) || istEingabe(doc.activeElement)) {
+            testLog('            Textfeld hat den Fokus, nicht abgefangen');
+            return;
+          }
           e.preventDefault();
           e.stopPropagation();
           if (!e.repeat) blaettern('weiter');
         }, true);
-      } catch (e) { /* kein Zugriff */ }
+        testLog('Page Down in der Seite aktiv');
+      } catch (e) {
+        testLog('Kein Zugriff auf die Seite: ' + e.message);
+      }
     }
 
     // ─── Frame scaling ────────────────────────────────────
@@ -1000,6 +1086,7 @@
       try {
         var savedFarbe = Office.context.document.settings.get('webViewerFarbe');
         applyFarbe(savedFarbe || STANDARD_FARBE);
+        setTastenTest(Office.context.document.settings.get('webViewerTastenTest') === true);
       } catch (e) {
         // Silent: Office API not available (standalone/testing mode)
       }
