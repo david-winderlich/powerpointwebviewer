@@ -23,6 +23,7 @@
       --bx: 0;
       --gx: 9;
       --nachbar-bis: 0;             /* rechte Kante der linken Nachbarfläche (pt), 0 = keine */
+      --glas-farbe: rgba(255,255,255,.92);   /* Farbe der Glasfläche (aus farben.js: glas) */
       /* Schatten der Glasflächen wie auf den Folien: Versatz nach unten, Unschärfe, Deckkraft */
       --schatten-y: 6;              /* pt, an den Folien gemessen */
       --schatten-blur: 12;          /* pt */
@@ -232,7 +233,7 @@
       overflow: hidden;
       /* clip-path rundet auch iframe und WebGL-Inhalte zuverlässig ab (Safari/WebKit) */
       clip-path: inset(0 round calc(13 * var(--ptx)));
-      background: rgba(255,255,255,.92);
+      background: var(--glas-farbe);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
     }
@@ -535,6 +536,7 @@
       root.setProperty('--bx', String(x));
       root.setProperty('--gx', String(gx));
       root.setProperty('--nachbar-bis', String(nachbar));
+      root.setProperty('--glas-farbe', f.glas || 'rgba(255,255,255,.92)');
       document.body.classList.toggle('ohne-nachbar', !(nachbar > 9 && nachbar <= x));
     }
 

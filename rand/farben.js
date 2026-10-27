@@ -12,14 +12,23 @@
 //           Die Glasfläche endet immer bei 951 pt, oben 9 pt, 522 pt hoch.
 //   nachbarBis  rechte Kante der linken Glasfläche in pt (nur geteilte Folien).
 //           Deren Schatten fällt in die Lücke und wird mitgezeichnet.
+//   glas    Farbe der Glasfläche, gemessen an den Folien (ohne Angabe: Weiß 92 %).
 //
 // Alle Maße beziehen sich auf eine Folie von 960 × 540 pt.
 // Neue Farbe: Bild hochladen und Einträge nach dem Muster unten ergänzen.
 // Der Eintrag mit der id 'gruen' ist der Standard.
+// Geteilte Folien (gemessen an den Orange-Folien, Lücke zwischen den Flächen 9 pt):
+//   66 %: linke Fläche bis 320.1 pt, rechte ab 329.1 pt
+//   50 %: linke Fläche bis 475.5 pt, rechte ab 484.5 pt
+//   33 %: linke Fläche bis 630.9 pt, rechte ab 639.9 pt
+// x liegt jeweils in der Mitte der Lücke (bei 50 % genau auf der Folienmitte).
 window.RAHMEN_FARBEN = [
-  { id: 'gruen',    name: 'Grün 100 %', bild: 'gruen', ersatz: '#3f8f6b' },
-  { id: 'gruen-66', name: 'Grün 66 %',  bild: 'gruen', ersatz: '#3f8f6b', x: 323.3, glasX: 327.2, nachbarBis: 319.4 },
-  { id: 'gruen-50', name: 'Grün 50 %',  bild: 'gruen', ersatz: '#3f8f6b', x: 480,   glasX: 482.7, nachbarBis: 474.9 },
-  { id: 'gruen-33', name: 'Grün 33 %',  bild: 'gruen', ersatz: '#3f8f6b', x: 634.3, glasX: 638.2, nachbarBis: 630.4 },
-  { id: 'orange',   name: 'Orange 100 %', bild: 'orange', ersatz: '#e07b2a' }
+  { id: 'gruen',     name: 'Grün 100 %',   bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2' },
+  { id: 'gruen-66',  name: 'Grün 66 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'gruen-50',  name: 'Grün 50 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'gruen-33',  name: 'Grün 33 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'orange',    name: 'Orange 100 %', bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2' },
+  { id: 'orange-66', name: 'Orange 66 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'orange-50', name: 'Orange 50 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'orange-33', name: 'Orange 33 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
 ];

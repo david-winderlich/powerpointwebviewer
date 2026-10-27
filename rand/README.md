@@ -11,15 +11,16 @@ Im Auswahlfeld der Steuerleiste wählst du die Variante passend zur Folie. Das A
 muss dann so auf der Folie liegen (oben 0, Höhe = ganze Folienhöhe, rechts bündig
 mit dem Folienrand):
 
-| Variante    | Position links | Breite   | Folie 33,87 cm breit      | Folie 50,8 cm breit       |
-|-------------|----------------|----------|---------------------------|---------------------------|
-| Grün 100 %  | 0 %            | 100 %    | x 0 cm, Breite 33,87 cm   | x 0 cm, Breite 50,80 cm   |
-| Grün 66 %   | 33,68 %        | 66,32 %  | x 11,41 cm, Breite 22,46 cm | x 17,11 cm, Breite 33,69 cm |
-| Grün 50 %   | 50 %           | 50 %     | x 16,93 cm, Breite 16,93 cm | x 25,40 cm, Breite 25,40 cm |
-| Grün 33 %   | 66,07 %        | 33,93 %  | x 22,38 cm, Breite 11,49 cm | x 33,57 cm, Breite 17,23 cm |
+| Variante           | Position links | Breite   | Folie 33,87 cm breit        | Folie 50,8 cm breit         |
+|--------------------|----------------|----------|-----------------------------|-----------------------------|
+| Grün/Orange 100 %  | 0 %            | 100 %    | x 0 cm, Breite 33,87 cm     | x 0 cm, Breite 50,80 cm     |
+| Grün/Orange 66 %   | 33,81 %        | 66,19 %  | x 11,45 cm, Breite 22,42 cm | x 17,18 cm, Breite 33,62 cm |
+| Grün/Orange 50 %   | 50 %           | 50 %     | x 16,93 cm, Breite 16,93 cm | x 25,40 cm, Breite 25,40 cm |
+| Grün/Orange 33 %   | 66,19 %        | 33,81 %  | x 22,42 cm, Breite 11,45 cm | x 33,62 cm, Breite 17,18 cm |
 
-Alle Grün-Varianten nutzen dasselbe Bild `gruen.png`; der Viewer schneidet den
-passenden Ausschnitt aus. Der Reiter „Kapitel“ oben rechts wird nicht nachgebildet,
+Alle Varianten einer Farbe nutzen dasselbe Bild (`gruen.png`, `orange.png`); der Viewer
+schneidet den passenden Ausschnitt aus. Die Glasfläche bekommt die an den Folien
+gemessene Farbe (`glas` in `farben.js`). Der Reiter „Kapitel“ oben rechts wird nicht nachgebildet,
 dort zeigt der Viewer die normale abgerundete Ecke. Die Positionen der geteilten
 Glasflächen stehen in `farben.js` (`x`, `glasX`, `nachbarBis`).
 
