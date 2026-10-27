@@ -7,14 +7,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* Eckenradius in % der Breite (vw), damit er beim Skalieren mitwächst.
-       1.87vw entspricht 17,7 pt bei einer 940 pt breiten Fläche (Folie 960 pt). */
-    :root { --corner-radius: 1.87vw; --slide-bg: transparent; }
-    html { background: transparent; }
+    /* ─── Rahmen, Glasfläche und Logo ─────────────────────────────────
+       PowerPoint zeigt Add-ins immer undurchsichtig und eckig an. Deshalb liegt
+       das Add-in über der ganzen Folie und zeichnet Rand und Glasfläche selbst.
+       Alle Maße beziehen sich auf eine Folie von 960 × 540 pt.
+       --rand und --rand-ersatz werden per Skript aus rand/farben.js gesetzt. */
+    :root {
+      --rand: none;                 /* Randtextur: url(rand/<farbe>.png) */
+      --rand-ersatz: #3f8f6b;       /* Farbe, solange das Bild fehlt */
+      /* Logo unten rechts in #glas, Angaben in pt: Abstand zum Rand und Größe.
+         Ergibt bei 960 × 540 pt die Position x 878 / y 470 pt. */
+      --logo-rechts: 13;
+      --logo-unten: 13;
+      --logo-breite: 60;
+      --logo-hoehe: 48;
+    }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
     body {
-      width: 100%; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden;
-      background: var(--slide-bg);
-      padding: 0;
+      width: 100%; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--rand) center / 100% 100% no-repeat var(--rand-ersatz);
     }
 
     /* Control bar */
@@ -160,25 +171,86 @@
     }
     #envBadge.hidden { opacity: 0; pointer-events: none; }
 
-    /* Inner wrapper - white area inside the blue grab border */
+    /* Ganzes Add-in-Fenster (auch für den Vollbildmodus, daher eigener Hintergrund) */
     #appWrapper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: #f0f2f5;
-      border-radius: var(--corner-radius);
-      overflow: hidden;
-      isolation: isolate;          /* sorgt dafuer, dass auch skalierte Inhalte sauber abgerundet werden */
-      transform: translateZ(0);
+      position: fixed;
+      inset: 0;
+      background: var(--rand) center / 100% 100% no-repeat var(--rand-ersatz);
     }
 
-    /* iframe */
+    /* Milchglasfläche mit abgerundeten Ecken, darin der iframe */
+    #glas {
+      position: absolute;
+      left: calc(9/960*100vw);
+      top: calc(9/540*100vh);
+      width: calc(942/960*100vw);
+      height: calc(522/540*100vh);
+      border-radius: calc(13/960*100vw);
+      overflow: hidden;
+      /* clip-path rundet auch iframe und WebGL-Inhalte zuverlässig ab (Safari/WebKit) */
+      clip-path: inset(0 round calc(13/960*100vw));
+      background: rgba(255,255,255,.92);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Option „Ohne Rahmen“: bisheriges Verhalten, Inhalt füllt das ganze Fenster */
+    body.ohne-rahmen,
+    body.ohne-rahmen #appWrapper { background: #f0f2f5; }
+    body.ohne-rahmen #glas {
+      left: 0; top: 0; width: 100%; height: 100%;
+      border-radius: 0;
+      clip-path: none;
+      background: #f0f2f5;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    body.ohne-rahmen #webFrame { background: white; }
+    body.ohne-rahmen #overlay { background: #f0f2f5; }
+
+    /* iframe: randlos, füllt #glas, transparent (die Glasfläche scheint durch) */
     #webFrame {
       display: block;
       width: 100%;
       height: 100%;
       border: none;
+      background: transparent;
+    }
+
+    /* Optionales Logo unten rechts (rand/logo.png), klickt nicht mit */
+    #logo {
+      position: absolute;
+      right: calc(var(--logo-rechts)/960*100vw);
+      bottom: calc(var(--logo-unten)/540*100vh);
+      width: calc(var(--logo-breite)/960*100vw);
+      height: calc(var(--logo-hoehe)/540*100vh);
+      object-fit: contain;
+      object-position: right bottom;
+      pointer-events: none;
+      z-index: 45;
+    }
+    #logo[hidden] { display: none; }
+
+    /* Auswahlfeld Farbe und Schalter Logo in der Steuerleiste */
+    .select {
+      padding: 7px 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 13px;
       background: white;
+      color: #333;
+      cursor: pointer;
+      outline: none;
+    }
+    .select:focus { border-color: #4a90d9; }
+    .chk {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: #555;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
     /* Error / status overlay */
@@ -189,7 +261,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #f0f2f5;
+      background: transparent;
       z-index: 50;
       text-align: center;
       padding: 2em;
@@ -256,14 +328,19 @@
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <!-- Liste der Rahmenfarben (rand/farben.js) -->
+  <script src="rand/farben.js"></script>
 </head>
 <body>
 <div id="appWrapper">
+<div id="glas">
 
   <!-- Control bar -->
   <div id="config">
     <span class="icon">🌐</span>
     <input id="urlInput" type="text" placeholder="Enter website URL (e.g. https://example.com)" />
+    <select id="farbeSelect" class="select" title="Rahmenfarbe"></select>
+    <label class="chk" title="Logo aus rand/logo.png unten rechts einblenden"><input type="checkbox" id="logoCheck"> Logo</label>
     <button class="btn btn-primary" onclick="loadUrl()">Load</button>
     <button class="btn btn-icon" onclick="reloadFrame()" title="Reload page">↻</button>
     <button class="btn btn-icon" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
@@ -298,8 +375,13 @@
   <iframe id="webFrame" src=""
           allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; accelerometer; gyroscope; web-share"
           allowfullscreen
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-presentation allow-downloads allow-modals"></iframe>
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-presentation allow-downloads allow-modals"
+          allowtransparency="true"></iframe>
 
+  <!-- Optionales Logo (rand/logo.png) -->
+  <img id="logo" alt="" hidden>
+
+</div><!-- /glas -->
 </div><!-- /appWrapper -->
 
   <script>
@@ -318,6 +400,81 @@
     let currentUrl = '';
     let loadTimeoutId = null;
     let iframeLoadFailed = false;
+
+    // ─── Rahmenfarbe und Logo ─────────────────────────────
+    // Die Farbliste steht in rand/farben.js. Jede Farbe braucht ein Bild rand/<id>.png.
+    const farbeSelect = document.getElementById('farbeSelect');
+    const logoCheck = document.getElementById('logoCheck');
+    const logoImg = document.getElementById('logo');
+    const STANDARD_FARBE = 'gruen';
+    const OHNE_RAHMEN = 'ohne';
+    const FARBEN = (Array.isArray(window.RAHMEN_FARBEN) && window.RAHMEN_FARBEN.length)
+      ? window.RAHMEN_FARBEN
+      : [{ id: 'gruen', name: 'Grün', ersatz: '#3f8f6b' }];   // falls farben.js fehlt
+    let currentFarbe = STANDARD_FARBE;
+    let logoOn = false;
+    let logoMissing = false;
+
+    function findFarbe(id) {
+      for (var i = 0; i < FARBEN.length; i++) if (FARBEN[i].id === id) return FARBEN[i];
+      return null;
+    }
+
+    function fillFarbeSelect() {
+      farbeSelect.innerHTML = '';
+      FARBEN.forEach(function (f) {
+        var o = document.createElement('option');
+        o.value = f.id;
+        o.textContent = f.name || f.id;
+        farbeSelect.appendChild(o);
+      });
+      var o = document.createElement('option');
+      o.value = OHNE_RAHMEN;
+      o.textContent = 'Ohne Rahmen';
+      farbeSelect.appendChild(o);
+    }
+
+    function applyFarbe(id) {
+      if (id !== OHNE_RAHMEN && !findFarbe(id)) {
+        id = findFarbe(STANDARD_FARBE) ? STANDARD_FARBE : FARBEN[0].id;
+      }
+      currentFarbe = id;
+      farbeSelect.value = id;
+      document.body.classList.toggle('ohne-rahmen', id === OHNE_RAHMEN);
+      if (id !== OHNE_RAHMEN) {
+        var f = findFarbe(id);
+        var root = document.documentElement.style;
+        root.setProperty('--rand', 'url("rand/' + encodeURIComponent(f.id) + '.png")');
+        root.setProperty('--rand-ersatz', f.ersatz || '#3f8f6b');
+      }
+    }
+
+    function applyLogo(on) {
+      logoOn = !!on;
+      logoCheck.checked = logoOn;
+      if (logoOn && !logoImg.getAttribute('src')) logoImg.src = 'rand/logo.png';
+      logoImg.hidden = !logoOn || logoMissing;
+    }
+    logoImg.addEventListener('error', function () { logoMissing = true; logoImg.hidden = true; });
+    logoImg.addEventListener('load', function () { logoMissing = false; logoImg.hidden = !logoOn; });
+
+    farbeSelect.addEventListener('change', function () {
+      applyFarbe(farbeSelect.value);
+      saveSetting('webViewerFarbe', currentFarbe);
+    });
+    logoCheck.addEventListener('change', function () {
+      applyLogo(logoCheck.checked);
+      saveSetting('webViewerLogo', logoOn);
+    });
+
+    // Startwerte: Standard Grün. Zum Testen im Browser auch per ?farbe=orange&logo=1.
+    // In PowerPoint gelten danach die pro Folie gespeicherten Einstellungen (Office.onReady).
+    fillFarbeSelect();
+    (function () {
+      var q = new URLSearchParams(location.search);
+      applyFarbe(q.get('farbe') || STANDARD_FARBE);
+      applyLogo(q.get('logo') === '1');
+    })();
 
     // ─── Frame scaling ────────────────────────────────────
     // 1 = unchanged. Values above 1 give the embedded page a larger layout
@@ -598,16 +755,21 @@
       }, isOnline ? 12000 : 15000); // Shorter timeout for Online since it's more likely to fail
     }
 
-    // ─── Save URL to Office settings ──────────────────────
-    function saveUrl(url) {
+    // ─── Save settings (per add-in instance, i.e. per slide) ─
+    function saveSetting(key, value) {
       try {
         if (officeReady && Office.context && Office.context.document && Office.context.document.settings) {
-          Office.context.document.settings.set('webViewerUrl', url);
+          Office.context.document.settings.set(key, value);
           Office.context.document.settings.saveAsync();
         }
       } catch (e) {
         // Silent: Office API not available (standalone/testing mode)
       }
+    }
+
+    // ─── Save URL to Office settings ──────────────────────
+    function saveUrl(url) {
+      saveSetting('webViewerUrl', url);
     }
 
     // ─── Load URL into iframe ─────────────────────────────
@@ -694,7 +856,7 @@
     });
 
     // ─── Initialize with Office.js ────────────────────────
-    Office.onReady(function () {
+    if (typeof Office !== 'undefined' && Office.onReady) Office.onReady(function () {
       officeReady = true;
 
       // Detect environment
@@ -703,6 +865,17 @@
       // Update welcome screen with environment-specific tips
       if (!currentUrl) {
         showWelcome();
+      }
+
+      // Saved frame colour and logo for this slide (default: Grün, no logo)
+      try {
+        var settings = Office.context.document.settings;
+        var savedFarbe = settings.get('webViewerFarbe');
+        var savedLogo = settings.get('webViewerLogo');
+        applyFarbe(savedFarbe || STANDARD_FARBE);
+        applyLogo(savedLogo === true);
+      } catch (e) {
+        // Silent: Office API not available (standalone/testing mode)
       }
 
       // Try to load saved URL for this slide
