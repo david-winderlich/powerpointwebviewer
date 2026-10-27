@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* ─── Rahmen, Glasfläche und Logo ─────────────────────────────────
+    /* ─── Rahmen, Glasfläche und Blätterpfeile ────────────────────────
        PowerPoint zeigt Add-ins immer undurchsichtig und eckig an. Deshalb liegt
        das Add-in über der ganzen Folie und zeichnet Rand und Glasfläche selbst.
        Alle Maße beziehen sich auf eine Folie von 960 × 540 pt.
@@ -15,12 +15,9 @@
     :root {
       --rand: none;                 /* Randtextur: url(rand/<farbe>.png) */
       --rand-ersatz: #3f8f6b;       /* Farbe, solange das Bild fehlt */
-      /* Logo unten rechts in #glas, Angaben in pt: Abstand zum Rand und Größe.
-         Ergibt bei 960 × 540 pt die Position x 878 / y 470 pt. */
-      --logo-rechts: 13;
-      --logo-unten: 13;
-      --logo-breite: 60;
-      --logo-hoehe: 48;
+      /* Blätterpfeile in den unteren Ecken von #glas, Angaben in pt */
+      --nav-groesse: 26;            /* Durchmesser eines Pfeils */
+      --nav-abstand: 10;            /* Abstand zur Ecke der Glasfläche */
     }
     html, body { margin: 0; height: 100%; overflow: hidden; }
     body {
@@ -217,21 +214,54 @@
       background: transparent;
     }
 
-    /* Optionales Logo unten rechts (rand/logo.png), klickt nicht mit */
-    #logo {
+    /* Blätterpfeile: ‹ unten links, › unten rechts. Unsichtbar, bis die Maus
+       in die Nähe kommt (Klasse .nah am Knopf, gesetzt per Skript). */
+    .nav-btn {
       position: absolute;
-      right: calc(var(--logo-rechts)/960*100vw);
-      bottom: calc(var(--logo-unten)/540*100vh);
-      width: calc(var(--logo-breite)/960*100vw);
-      height: calc(var(--logo-hoehe)/540*100vh);
-      object-fit: contain;
-      object-position: right bottom;
-      pointer-events: none;
-      z-index: 45;
+      bottom: calc(var(--nav-abstand)/960*100vw);
+      width: calc(var(--nav-groesse)/960*100vw);
+      height: calc(var(--nav-groesse)/960*100vw);
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      color: #334;
+      font: 600 calc(17/960*100vw)/1 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      z-index: 90;
     }
-    #logo[hidden] { display: none; }
+    #navPrev { left: calc(var(--nav-abstand)/960*100vw); padding-right: 0.15em; }
+    #navNext { right: calc(var(--nav-abstand)/960*100vw); padding-left: 0.15em; }
+    .nav-btn.nah { opacity: 0.75; }
+    .nav-btn:hover, .nav-btn:focus-visible { opacity: 1; background: #fff; }
 
-    /* Auswahlfeld Farbe und Schalter Logo in der Steuerleiste */
+    /* Kurze Meldung, z. B. wenn das Blättern nicht möglich ist */
+    #navHinweis {
+      position: absolute;
+      left: 50%;
+      bottom: calc(14/960*100vw);
+      transform: translateX(-50%);
+      max-width: 80%;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(30, 34, 44, 0.85);
+      color: #fff;
+      font-size: 12px;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 95;
+    }
+    #navHinweis.zeigen { opacity: 1; }
+
+    /* Auswahlfeld Farbe in der Steuerleiste */
     .select {
       padding: 7px 10px;
       border: 2px solid #e0e0e0;
@@ -243,15 +273,6 @@
       outline: none;
     }
     .select:focus { border-color: #4a90d9; }
-    .chk {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      color: #555;
-      white-space: nowrap;
-      cursor: pointer;
-    }
 
     /* Error / status overlay */
     #overlay {
@@ -340,7 +361,6 @@
     <span class="icon">🌐</span>
     <input id="urlInput" type="text" placeholder="Enter website URL (e.g. https://example.com)" />
     <select id="farbeSelect" class="select" title="Rahmenfarbe"></select>
-    <label class="chk" title="Logo aus rand/logo.png unten rechts einblenden"><input type="checkbox" id="logoCheck"> Logo</label>
     <button class="btn btn-primary" onclick="loadUrl()">Load</button>
     <button class="btn btn-icon" onclick="reloadFrame()" title="Reload page">↻</button>
     <button class="btn btn-icon" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
@@ -378,8 +398,10 @@
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-presentation allow-downloads allow-modals"
           allowtransparency="true"></iframe>
 
-  <!-- Optionales Logo (rand/logo.png) -->
-  <img id="logo" alt="" hidden>
+  <!-- Blätterpfeile und Hinweis -->
+  <button id="navPrev" class="nav-btn" type="button" title="Vorherige Folie" aria-label="Vorherige Folie">‹</button>
+  <button id="navNext" class="nav-btn" type="button" title="Nächste Folie" aria-label="Nächste Folie">›</button>
+  <div id="navHinweis" role="status"></div>
 
 </div><!-- /glas -->
 </div><!-- /appWrapper -->
@@ -401,19 +423,15 @@
     let loadTimeoutId = null;
     let iframeLoadFailed = false;
 
-    // ─── Rahmenfarbe und Logo ─────────────────────────────
+    // ─── Rahmenfarbe ──────────────────────────────────────
     // Die Farbliste steht in rand/farben.js. Jede Farbe braucht ein Bild rand/<id>.png.
     const farbeSelect = document.getElementById('farbeSelect');
-    const logoCheck = document.getElementById('logoCheck');
-    const logoImg = document.getElementById('logo');
     const STANDARD_FARBE = 'gruen';
     const OHNE_RAHMEN = 'ohne';
     const FARBEN = (Array.isArray(window.RAHMEN_FARBEN) && window.RAHMEN_FARBEN.length)
       ? window.RAHMEN_FARBEN
       : [{ id: 'gruen', name: 'Grün', ersatz: '#3f8f6b' }];   // falls farben.js fehlt
     let currentFarbe = STANDARD_FARBE;
-    let logoOn = false;
-    let logoMissing = false;
 
     function findFarbe(id) {
       for (var i = 0; i < FARBEN.length; i++) if (FARBEN[i].id === id) return FARBEN[i];
@@ -449,32 +467,119 @@
       }
     }
 
-    function applyLogo(on) {
-      logoOn = !!on;
-      logoCheck.checked = logoOn;
-      if (logoOn && !logoImg.getAttribute('src')) logoImg.src = 'rand/logo.png';
-      logoImg.hidden = !logoOn || logoMissing;
-    }
-    logoImg.addEventListener('error', function () { logoMissing = true; logoImg.hidden = true; });
-    logoImg.addEventListener('load', function () { logoMissing = false; logoImg.hidden = !logoOn; });
-
     farbeSelect.addEventListener('change', function () {
       applyFarbe(farbeSelect.value);
       saveSetting('webViewerFarbe', currentFarbe);
     });
-    logoCheck.addEventListener('change', function () {
-      applyLogo(logoCheck.checked);
-      saveSetting('webViewerLogo', logoOn);
+
+    // Startwert: Standard Grün. Zum Testen im Browser auch per ?farbe=orange.
+    // In PowerPoint gilt danach die pro Folie gespeicherte Farbe (Office.onReady).
+    fillFarbeSelect();
+    applyFarbe(new URLSearchParams(location.search).get('farbe') || STANDARD_FARBE);
+
+    // ─── Folien blättern ──────────────────────────────────
+    // Pfeile ‹ › in den unteren Ecken und die Taste Page Down (weiter).
+    // Pfeiltasten und Leertaste bleiben bewusst bei der Simulation.
+    const navPrev = document.getElementById('navPrev');
+    const navNext = document.getElementById('navNext');
+    const navHinweis = document.getElementById('navHinweis');
+    const NAV_NAEHE = 110 / 960;       // Einblend-Radius als Anteil der Fensterbreite
+    let letztesBlaettern = 0;
+    let hinweisTimer = null;
+
+    function zeigeHinweis(text) {
+      navHinweis.textContent = text;
+      navHinweis.classList.add('zeigen');
+      clearTimeout(hinweisTimer);
+      hinweisTimer = setTimeout(function () { navHinweis.classList.remove('zeigen'); }, 3500);
+    }
+
+    function blaettern(richtung) {
+      var jetzt = Date.now();
+      if (jetzt - letztesBlaettern < 400) return;     // gehaltene Taste nicht mehrfach auslösen
+      letztesBlaettern = jetzt;
+      try {
+        if (!officeReady || !Office.context.document.goToByIdAsync) {
+          zeigeHinweis('Blättern geht nur in PowerPoint.');
+          return;
+        }
+        var ziel = richtung === 'zurueck' ? Office.Index.Previous : Office.Index.Next;
+        Office.context.document.goToByIdAsync(ziel, Office.GoToType.Index, function (r) {
+          if (r.status === Office.AsyncResultStatus.Failed) {
+            zeigeHinweis('Blättern nicht möglich: ' + (r.error && r.error.message ? r.error.message : 'unbekannter Fehler'));
+          }
+        });
+      } catch (e) {
+        zeigeHinweis('Blättern nicht möglich: ' + e.message);
+      }
+    }
+
+    navPrev.addEventListener('click', function () { blaettern('zurueck'); });
+    navNext.addEventListener('click', function () { blaettern('weiter'); });
+
+    // Pfeile einblenden, wenn die Maus in der Nähe ist (x/y in Koordinaten des Add-ins)
+    function naehePruefen(x, y) {
+      var radius = NAV_NAEHE * window.innerWidth;
+      [navPrev, navNext].forEach(function (b) {
+        var r = b.getBoundingClientRect();
+        var dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
+        b.classList.toggle('nah', dx * dx + dy * dy < radius * radius);
+      });
+    }
+    function naeheAus() { navPrev.classList.remove('nah'); navNext.classList.remove('nah'); }
+    let letzteMaus = { t: 0, x: 0, y: 0 };   // letzte Mausbewegung direkt im Add-in
+    document.addEventListener('mousemove', function (e) {
+      letzteMaus = { t: Date.now(), x: e.clientX, y: e.clientY };
+      naehePruefen(e.clientX, e.clientY);
+    });
+    document.documentElement.addEventListener('mouseleave', naeheAus);
+
+    // Page Down im Add-in selbst (wenn das Add-in den Fokus hat)
+    function istEingabe(el) {
+      return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'PageDown' || istEingabe(e.target)) return;
+      e.preventDefault();
+      if (!e.repeat) blaettern('weiter');
     });
 
-    // Startwerte: Standard Grün. Zum Testen im Browser auch per ?farbe=orange&logo=1.
-    // In PowerPoint gelten danach die pro Folie gespeicherten Einstellungen (Office.onReady).
-    fillFarbeSelect();
-    (function () {
-      var q = new URLSearchParams(location.search);
-      applyFarbe(q.get('farbe') || STANDARD_FARBE);
-      applyLogo(q.get('logo') === '1');
-    })();
+    // Nachrichten von navigation.js aus der geladenen Seite (nur aus dem eigenen iframe)
+    window.addEventListener('message', function (e) {
+      if (e.source !== webFrame.contentWindow) return;
+      var d = e.data;
+      if (!d || typeof d !== 'object') return;
+      if (d.typ === 'folie' && (d.richtung === 'weiter' || d.richtung === 'zurueck')) {
+        blaettern(d.richtung);
+      } else if (d.typ === 'maus' && typeof d.x === 'number' && typeof d.y === 'number') {
+        // Mausposition aus der Seite in Add-in-Koordinaten umrechnen (iframe ist skaliert)
+        var r = webFrame.getBoundingClientRect();
+        var s = d.breite ? r.width / d.breite : 1;
+        naehePruefen(r.left + d.x * s, r.top + d.y * s);
+      } else if (d.typ === 'maus-weg') {
+        // Die Meldung kommt verzögert an. Ist die Maus inzwischen im Add-in
+        // (z. B. auf dem Rand), gilt deren Position.
+        if (Date.now() - letzteMaus.t < 300) naehePruefen(letzteMaus.x, letzteMaus.y);
+        else naeheAus();
+      }
+    });
+
+    // navigation.js automatisch in die geladene Seite einbinden. Das klappt nur bei
+    // Seiten auf derselben Domain (david-winderlich.github.io). Seiten von anderen
+    // Domains können navigation.js selbst einbinden.
+    const NAV_SKRIPT = new URL('navigation.js', location.href).href;
+    function navigationEinbinden() {
+      try {
+        var doc = webFrame.contentDocument;
+        if (!doc || !doc.documentElement || doc.getElementById('ppt-navigation')) return;
+        var s = doc.createElement('script');
+        s.id = 'ppt-navigation';
+        s.src = NAV_SKRIPT;
+        (doc.head || doc.documentElement).appendChild(s);
+      } catch (e) {
+        // andere Domain: kein Zugriff, dann nur Pfeile im Add-in
+      }
+    }
 
     // ─── Frame scaling ────────────────────────────────────
     // 1 = unchanged. Values above 1 give the embedded page a larger layout
@@ -832,6 +937,7 @@
           // CORS error = the site actually loaded (different origin)
           // This is the GOOD case - site loaded from a different domain
         }
+        navigationEinbinden();
         overlay.classList.add('hidden');
       }
     });
@@ -867,13 +973,10 @@
         showWelcome();
       }
 
-      // Saved frame colour and logo for this slide (default: Grün, no logo)
+      // Saved frame colour for this slide (default: Grün)
       try {
-        var settings = Office.context.document.settings;
-        var savedFarbe = settings.get('webViewerFarbe');
-        var savedLogo = settings.get('webViewerLogo');
+        var savedFarbe = Office.context.document.settings.get('webViewerFarbe');
         applyFarbe(savedFarbe || STANDARD_FARBE);
-        applyLogo(savedLogo === true);
       } catch (e) {
         // Silent: Office API not available (standalone/testing mode)
       }

@@ -10,7 +10,6 @@ eckig anzeigt. Die Bilder in diesem Ordner sind die Randtexturen.
 |--------------|--------------------------------------------------------------|
 | `gruen.png`  | Randtextur Grün (Standard)                                   |
 | `orange.png` | Randtextur Orange                                            |
-| `logo.png`   | optional: Logo, das unten rechts über der Simulation liegt   |
 | `farben.js`  | Liste der Farben, die im Auswahlfeld erscheinen              |
 
 Dateinamen klein schreiben, ohne Umlaute und Leerzeichen. GitHub Pages unterscheidet
@@ -32,13 +31,17 @@ Groß- und Kleinschreibung.
 Die `id` ist der Dateiname ohne `.png`. `ersatz` ist die Farbe, die angezeigt wird,
 solange das Bild fehlt.
 
-## Logo
+## Blättern in der Bildschirmpräsentation
 
-`logo.png` wird nur angezeigt, wenn im Viewer der Haken **Logo** gesetzt ist.
-Position und Größe stehen oben in `viewer.html` (`--logo-rechts`, `--logo-unten`,
-`--logo-breite`, `--logo-hoehe`, Angaben in pt bezogen auf eine Folie von
-960 × 540 pt). Standard: Fläche ab x 878 / y 470 pt, 60 × 48 pt. Ein transparentes PNG
-ist am besten.
+Weil das Add-in die ganze Folie bedeckt, kann man nicht mehr auf die Folie klicken.
+Dafür gibt es:
+
+- zwei Pfeile in den unteren Ecken der Glasfläche (‹ zurück, › weiter). Sie werden
+  erst sichtbar, wenn die Maus in die Nähe kommt. Größe und Abstand stehen oben in
+  `viewer.html` (`--nav-groesse`, `--nav-abstand`, Angaben in pt).
+- die Taste **Page Down** für „weiter“, auch wenn die Simulation den Fokus hat.
+  Dafür bindet der Viewer `../navigation.js` automatisch in die geladene Seite ein.
+  Pfeiltasten, Leertaste und Page Up bleiben bei der Simulation.
 
 ## Maße der Glasfläche (Folie 960 × 540 pt)
 
