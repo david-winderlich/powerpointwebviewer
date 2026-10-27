@@ -9,12 +9,26 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     /* ─── Rahmen, Glasfläche und Blätterpfeile ────────────────────────
        PowerPoint zeigt Add-ins immer undurchsichtig und eckig an. Deshalb liegt
-       das Add-in über der ganzen Folie und zeichnet Rand und Glasfläche selbst.
+       das Add-in über der Folie (ganz oder rechtsbündig über einem Teil) und
+       zeichnet Rand und Glasfläche selbst.
        Alle Maße beziehen sich auf eine Folie von 960 × 540 pt.
-       --rand und --rand-ersatz werden per Skript aus rand/farben.js gesetzt. */
+       Die folgenden Werte setzt das Skript aus rand/farben.js:
+         --rand, --rand-ersatz   Randtextur und Ersatzfarbe
+         --bx                    linke Kante des Add-ins auf der Folie (pt);
+                                 das Add-in reicht von --bx bis zum rechten Folienrand
+         --gx                    linke Kante der Glasfläche auf der Folie (pt) */
     :root {
-      --rand: none;                 /* Randtextur: url(rand/<farbe>.png) */
+      --rand: none;                 /* Randtextur: url(rand/<bild>.png) */
       --rand-ersatz: #3f8f6b;       /* Farbe, solange das Bild fehlt */
+      --bx: 0;
+      --gx: 9;
+      --nachbar-bis: 0;             /* rechte Kante der linken Nachbarfläche (pt), 0 = keine */
+      /* Schatten der Glasflächen wie auf den Folien: Versatz nach unten, Unschärfe, Deckkraft */
+      --schatten-y: 6;              /* pt, an den Folien gemessen */
+      --schatten-blur: 12;          /* pt */
+      --schatten-alpha: 0.6;
+      --ptx: calc(100vw / (960 - var(--bx)));   /* 1 pt waagerecht */
+      --pty: calc(100vh / 540);                 /* 1 pt senkrecht */
       /* Blätterpfeile im farbigen Rand unten links und unten rechts, Angaben in pt.
          Der Rand ist 9 pt breit; die Pfeile müssen hineinpassen. */
       --nav-breite: 14;             /* Breite eines Pfeils */
@@ -23,9 +37,17 @@
       --nav-unten: 1;               /* Abstand zum unteren Folienrand */
     }
     html, body { margin: 0; height: 100%; overflow: hidden; }
+    /* Randtextur: auf die ganze Folienbreite gestreckt, rechtsbündig, sodass bei
+       einem schmaleren Add-in genau der passende Ausschnitt zu sehen ist */
+    body, #appWrapper {
+      background-color: var(--rand-ersatz);
+      background-image: var(--rand);
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: calc(960 / (960 - var(--bx)) * 100%) 100%;
+    }
     body {
       width: 100%; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif;
-      background: var(--rand) center / 100% 100% no-repeat var(--rand-ersatz);
     }
 
     /* Control bar */
@@ -175,20 +197,41 @@
     #appWrapper {
       position: fixed;
       inset: 0;
-      background: var(--rand) center / 100% 100% no-repeat var(--rand-ersatz);
     }
 
-    /* Milchglasfläche mit abgerundeten Ecken, darin der iframe */
+    /* Schatten der Glasfläche und der linken Nachbarfläche (bei geteilten Folien).
+       Eigene Elemente, weil #glas per clip-path beschnitten ist und dort kein
+       Schatten nach außen möglich wäre. Die Flächen selbst sind unsichtbar. */
+    .schatten {
+      position: absolute;
+      top: calc(9 * var(--pty));
+      height: calc(522 * var(--pty));
+      border-radius: calc(13 * var(--ptx));
+      box-shadow: 0 calc(var(--schatten-y) * var(--pty)) calc(var(--schatten-blur) * var(--ptx)) rgba(0, 0, 0, var(--schatten-alpha));
+      pointer-events: none;
+    }
+    #glasSchatten {
+      left: calc((var(--gx) - var(--bx)) * var(--ptx));
+      width: calc((951 - var(--gx)) * var(--ptx));
+    }
+    #nachbarSchatten {
+      left: calc((9 - var(--bx)) * var(--ptx));
+      width: calc((var(--nachbar-bis) - 9) * var(--ptx));
+    }
+    body.ohne-rahmen .schatten, body.ohne-nachbar #nachbarSchatten { display: none; }
+
+    /* Milchglasfläche mit abgerundeten Ecken, darin der iframe.
+       Auf der Folie: von --gx bis 951 pt, oben 9 pt, 522 pt hoch, Radius 13 pt */
     #glas {
       position: absolute;
-      left: calc(9/960*100vw);
-      top: calc(9/540*100vh);
-      width: calc(942/960*100vw);
-      height: calc(522/540*100vh);
-      border-radius: calc(13/960*100vw);
+      left: calc((var(--gx) - var(--bx)) * var(--ptx));
+      top: calc(9 * var(--pty));
+      width: calc((951 - var(--gx)) * var(--ptx));
+      height: calc(522 * var(--pty));
+      border-radius: calc(13 * var(--ptx));
       overflow: hidden;
       /* clip-path rundet auch iframe und WebGL-Inhalte zuverlässig ab (Safari/WebKit) */
-      clip-path: inset(0 round calc(13/960*100vw));
+      clip-path: inset(0 round calc(13 * var(--ptx)));
       background: rgba(255,255,255,.92);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
@@ -221,12 +264,12 @@
        von #glas. Unsichtbar, bis die Maus in die Nähe kommt (Klasse .nah). */
     .nav-btn {
       position: absolute;
-      bottom: calc(var(--nav-unten)/540*100vh);
-      width: calc(var(--nav-breite)/960*100vw);
-      height: calc(var(--nav-hoehe)/540*100vh);
+      bottom: calc(var(--nav-unten) * var(--pty));
+      width: calc(var(--nav-breite) * var(--ptx));
+      height: calc(var(--nav-hoehe) * var(--pty));
       padding: 0;
       border: none;
-      border-radius: calc(var(--nav-hoehe)/540*100vh);
+      border-radius: calc(var(--nav-hoehe) * var(--pty));
       background: rgba(255, 255, 255, 0.85);
       box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
       color: #334;
@@ -241,8 +284,8 @@
     }
     /* Pfeil als Grafik: passt unabhängig von der Schrift immer ins Kästchen */
     .nav-btn svg { display: block; height: 72%; width: auto; }
-    #navPrev { left: calc(var(--nav-seite)/960*100vw); }
-    #navNext { right: calc(var(--nav-seite)/960*100vw); }
+    #navPrev { left: calc(var(--nav-seite) * var(--ptx)); }
+    #navNext { right: calc(var(--nav-seite) * var(--ptx)); }
 
     .nav-btn.nah { opacity: 0.8; }
     .nav-btn:hover, .nav-btn:focus-visible { opacity: 1; background: #fff; }
@@ -251,7 +294,7 @@
     #navHinweis {
       position: absolute;
       left: 50%;
-      bottom: calc(14/960*100vw);
+      bottom: calc(14 * var(--ptx));
       transform: translateX(-50%);
       max-width: 80%;
       padding: 6px 12px;
@@ -360,6 +403,8 @@
 </head>
 <body>
 <div id="appWrapper">
+<div id="nachbarSchatten" class="schatten"></div>
+<div id="glasSchatten" class="schatten"></div>
 <div id="glas">
 
   <!-- Control bar -->
@@ -432,8 +477,10 @@
     let loadTimeoutId = null;
     let iframeLoadFailed = false;
 
-    // ─── Rahmenfarbe ──────────────────────────────────────
-    // Die Farbliste steht in rand/farben.js. Jede Farbe braucht ein Bild rand/<id>.png.
+    // ─── Rahmenfarbe und Variante ─────────────────────────
+    // Die Liste steht in rand/farben.js. Jeder Eintrag nennt das Randbild
+    // (rand/<bild>.png) und optional, welchen Teil der Folie das Add-in bedeckt
+    // (x) und wo dort die Glasfläche beginnt (glasX), beides in pt.
     const farbeSelect = document.getElementById('farbeSelect');
     const STANDARD_FARBE = 'gruen';
     const OHNE_RAHMEN = 'ohne';
@@ -441,6 +488,7 @@
       ? window.RAHMEN_FARBEN
       : [{ id: 'gruen', name: 'Grün', ersatz: '#3f8f6b' }];   // falls farben.js fehlt
     let currentFarbe = STANDARD_FARBE;
+    let addinBreitePt = 960;        // Breite des Add-ins auf der Folie in pt
 
     function findFarbe(id) {
       for (var i = 0; i < FARBEN.length; i++) if (FARBEN[i].id === id) return FARBEN[i];
@@ -468,12 +516,26 @@
       currentFarbe = id;
       farbeSelect.value = id;
       document.body.classList.toggle('ohne-rahmen', id === OHNE_RAHMEN);
-      if (id !== OHNE_RAHMEN) {
-        var f = findFarbe(id);
-        var root = document.documentElement.style;
-        root.setProperty('--rand', 'url("rand/' + encodeURIComponent(f.id) + '.png")');
-        root.setProperty('--rand-ersatz', f.ersatz || '#3f8f6b');
+      var root = document.documentElement.style;
+      if (id === OHNE_RAHMEN) {
+        root.setProperty('--bx', '0');
+        root.setProperty('--gx', '9');
+        addinBreitePt = 960;
+        return;
       }
+      var f = findFarbe(id);
+      var x = Number(f.x) || 0;                         // linke Kante des Add-ins (pt)
+      var gx = (f.glasX != null) ? Number(f.glasX) : 9;  // linke Kante der Glasfläche (pt)
+      if (!(x >= 0 && x < 900)) x = 0;
+      if (!(gx >= x && gx < 940)) gx = Math.max(9, x);
+      addinBreitePt = 960 - x;
+      var nachbar = Number(f.nachbarBis) || 0;          // rechte Kante der linken Nachbarfläche (pt)
+      root.setProperty('--rand', 'url("rand/' + encodeURIComponent(f.bild || f.id) + '.png")');
+      root.setProperty('--rand-ersatz', f.ersatz || '#3f8f6b');
+      root.setProperty('--bx', String(x));
+      root.setProperty('--gx', String(gx));
+      root.setProperty('--nachbar-bis', String(nachbar));
+      document.body.classList.toggle('ohne-nachbar', !(nachbar > 9 && nachbar <= x));
     }
 
     farbeSelect.addEventListener('change', function () {
@@ -492,7 +554,7 @@
     const navPrev = document.getElementById('navPrev');
     const navNext = document.getElementById('navNext');
     const navHinweis = document.getElementById('navHinweis');
-    const NAV_NAEHE = 110 / 960;       // Einblend-Radius als Anteil der Fensterbreite
+    const NAV_NAEHE_PT = 110;          // Einblend-Radius in pt (Folienmaß)
     let letztesBlaettern = 0;
     let hinweisTimer = null;
 
@@ -528,7 +590,7 @@
 
     // Pfeile einblenden, wenn die Maus in der Nähe ist (x/y in Koordinaten des Add-ins)
     function naehePruefen(x, y) {
-      var radius = NAV_NAEHE * window.innerWidth;
+      var radius = NAV_NAEHE_PT * window.innerWidth / addinBreitePt;
       [navPrev, navNext].forEach(function (b) {
         var r = b.getBoundingClientRect();
         var dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);

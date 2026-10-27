@@ -1,8 +1,27 @@
 # Randtexturen für den Viewer
 
-Der Viewer liegt in PowerPoint über der ganzen Folie. Er zeichnet den farbigen Rand
-und die Milchglasfläche selbst, weil PowerPoint Add-ins immer undurchsichtig und
-eckig anzeigt. Die Bilder in diesem Ordner sind die Randtexturen.
+Der Viewer liegt in PowerPoint über der ganzen Folie oder, bei geteilten Folien,
+rechtsbündig über der rechten Glasfläche. Er zeichnet den farbigen Rand, die
+Milchglasfläche und ihren Schatten selbst, weil PowerPoint Add-ins immer
+undurchsichtig und eckig anzeigt. Die Bilder in diesem Ordner sind die Randtexturen.
+
+## Varianten und Position des Add-ins
+
+Im Auswahlfeld der Steuerleiste wählst du die Variante passend zur Folie. Das Add-in
+muss dann so auf der Folie liegen (oben 0, Höhe = ganze Folienhöhe, rechts bündig
+mit dem Folienrand):
+
+| Variante    | Position links | Breite   | Folie 33,87 cm breit      | Folie 50,8 cm breit       |
+|-------------|----------------|----------|---------------------------|---------------------------|
+| Grün 100 %  | 0 %            | 100 %    | x 0 cm, Breite 33,87 cm   | x 0 cm, Breite 50,80 cm   |
+| Grün 66 %   | 33,68 %        | 66,32 %  | x 11,41 cm, Breite 22,46 cm | x 17,11 cm, Breite 33,69 cm |
+| Grün 50 %   | 50 %           | 50 %     | x 16,93 cm, Breite 16,93 cm | x 25,40 cm, Breite 25,40 cm |
+| Grün 33 %   | 66,07 %        | 33,93 %  | x 22,38 cm, Breite 11,49 cm | x 33,57 cm, Breite 17,23 cm |
+
+Alle Grün-Varianten nutzen dasselbe Bild `gruen.png`; der Viewer schneidet den
+passenden Ausschnitt aus. Der Reiter „Kapitel“ oben rechts wird nicht nachgebildet,
+dort zeigt der Viewer die normale abgerundete Ecke. Die Positionen der geteilten
+Glasflächen stehen in `farben.js` (`x`, `glasX`, `nachbarBis`).
 
 ## Erwartete Dateien
 
@@ -26,9 +45,11 @@ Groß- und Kleinschreibung.
 
 1. Bild hochladen, z. B. `rand/blau.png`.
 2. In `farben.js` eine Zeile ergänzen:
-   `{ id: 'blau', name: 'Blau', ersatz: '#2f5f9e' },`
+   `{ id: 'blau', name: 'Blau 100 %', bild: 'blau', ersatz: '#2f5f9e' },`
+3. Für geteilte Folien die Grün-Zeilen kopieren und `id`, `name` und `bild` anpassen;
+   `x`, `glasX` und `nachbarBis` bleiben gleich, solange das Folienlayout gleich ist.
 
-Die `id` ist der Dateiname ohne `.png`. `ersatz` ist die Farbe, die angezeigt wird,
+`bild` ist der Dateiname ohne `.png`. `ersatz` ist die Farbe, die angezeigt wird,
 solange das Bild fehlt.
 
 ## Blättern in der Bildschirmpräsentation
@@ -48,6 +69,8 @@ Dafür gibt es:
 
 ## Maße der Glasfläche (Folie 960 × 540 pt)
 
-- 9 pt Abstand links und oben, Größe 942 × 522 pt
+- 9 pt Abstand links und oben, Größe 942 × 522 pt (geteilt: von `glasX` bis 951 pt)
 - Eckenradius 13 pt
 - Hintergrund weiß mit 92 % Deckkraft, 12 px Unschärfe dahinter (Milchglas)
+- Schatten: 6 pt nach unten, 12 pt Unschärfe, 60 % Deckkraft, an den Folien gemessen
+  (`--schatten-y`, `--schatten-blur`, `--schatten-alpha` oben in `viewer.html`)
