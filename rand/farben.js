@@ -41,5 +41,9 @@ window.RAHMEN_FARBEN = [
   { id: 'tuerkis',    name: 'Türkis 100 %', bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66 },
   { id: 'tuerkis-66', name: 'Türkis 66 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
   { id: 'tuerkis-50', name: 'Türkis 50 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'tuerkis-33', name: 'Türkis 33 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
+  { id: 'tuerkis-33', name: 'Türkis 33 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'hellgruen',    name: 'Hellgrün 100 %', bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68 },
+  { id: 'hellgruen-66', name: 'Hellgrün 66 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'hellgruen-50', name: 'Hellgrün 50 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'hellgruen-33', name: 'Hellgrün 33 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
 ];
