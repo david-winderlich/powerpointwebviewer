@@ -53,5 +53,13 @@ window.RAHMEN_FARBEN = [
   { id: 'indigo',    name: 'Indigo 100 %', bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62 },
   { id: 'indigo-66', name: 'Indigo 66 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
   { id: 'indigo-50', name: 'Indigo 50 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'indigo-33', name: 'Indigo 33 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
+  { id: 'indigo-33', name: 'Indigo 33 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'flieder',    name: 'Flieder 100 %', bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69 },
+  { id: 'flieder-66', name: 'Flieder 66 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'flieder-50', name: 'Flieder 50 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'flieder-33', name: 'Flieder 33 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'grau',    name: 'Grau 100 %', bild: 'grau', ersatz: '#535353', glas: '#fdfdfd' },
+  { id: 'grau-66', name: 'Grau 66 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'grau-50', name: 'Grau 50 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'grau-33', name: 'Grau 33 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
 ];
