@@ -45,5 +45,13 @@ window.RAHMEN_FARBEN = [
   { id: 'hellgruen',    name: 'Hellgrün 100 %', bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68 },
   { id: 'hellgruen-66', name: 'Hellgrün 66 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
   { id: 'hellgruen-50', name: 'Hellgrün 50 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'hellgruen-33', name: 'Hellgrün 33 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
+  { id: 'hellgruen-33', name: 'Hellgrün 33 %',  bild: 'hellgruen', ersatz: '#cfe800', glas: '#f6f7f3', schatten: 0.68, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'violett',    name: 'Violett 100 %', bild: 'violett', ersatz: '#b053a9', glas: '#f6f2f6', schatten: 0.66 },
+  { id: 'violett-66', name: 'Violett 66 %',  bild: 'violett', ersatz: '#b053a9', glas: '#f6f2f6', schatten: 0.66, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'violett-50', name: 'Violett 50 %',  bild: 'violett', ersatz: '#b053a9', glas: '#f6f2f6', schatten: 0.66, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'violett-33', name: 'Violett 33 %',  bild: 'violett', ersatz: '#b053a9', glas: '#f6f2f6', schatten: 0.66, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'indigo',    name: 'Indigo 100 %', bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62 },
+  { id: 'indigo-66', name: 'Indigo 66 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'indigo-50', name: 'Indigo 50 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'indigo-33', name: 'Indigo 33 %',  bild: 'indigo', ersatz: '#6a279d', glas: '#f6f3f6', schatten: 0.62, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
 ];
