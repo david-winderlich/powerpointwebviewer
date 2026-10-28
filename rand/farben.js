@@ -13,6 +13,9 @@
 //   nachbarBis  rechte Kante der linken Glasfläche in pt (nur geteilte Folien).
 //           Deren Schatten fällt in die Lücke und wird mitgezeichnet.
 //   glas    Farbe der Glasfläche, gemessen an den Folien (ohne Angabe: Weiß 92 %).
+//   schatten  Deckkraft des Schattens (ohne Angabe: 0.6). PowerPoint mischt den
+//           Schatten in linearem Licht, der Browser in sRGB; kräftige Ränder wie Rot
+//           und Türkis brauchen deshalb mehr Deckkraft (an den Folien gemessen).
 //
 // Alle Maße beziehen sich auf eine Folie von 960 × 540 pt.
 // Neue Farbe: Bild hochladen und Einträge nach dem Muster unten ergänzen.
@@ -30,5 +33,13 @@ window.RAHMEN_FARBEN = [
   { id: 'orange',    name: 'Orange 100 %', bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2' },
   { id: 'orange-66', name: 'Orange 66 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
   { id: 'orange-50', name: 'Orange 50 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'orange-33', name: 'Orange 33 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
+  { id: 'orange-33', name: 'Orange 33 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'rot',       name: 'Rot 100 %',    bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71 },
+  { id: 'rot-66',    name: 'Rot 66 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'rot-50',    name: 'Rot 50 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'rot-33',    name: 'Rot 33 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { id: 'tuerkis',    name: 'Türkis 100 %', bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66 },
+  { id: 'tuerkis-66', name: 'Türkis 66 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { id: 'tuerkis-50', name: 'Türkis 50 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { id: 'tuerkis-33', name: 'Türkis 33 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
 ];

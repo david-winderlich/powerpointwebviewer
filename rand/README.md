@@ -13,12 +13,13 @@ mit dem Folienrand):
 
 | Variante           | Position links | Breite   | Folie 33,87 cm breit        | Folie 50,8 cm breit         |
 |--------------------|----------------|----------|-----------------------------|-----------------------------|
-| Grün/Orange 100 %  | 0 %            | 100 %    | x 0 cm, Breite 33,87 cm     | x 0 cm, Breite 50,80 cm     |
-| Grün/Orange 66 %   | 33,81 %        | 66,19 %  | x 11,45 cm, Breite 22,42 cm | x 17,18 cm, Breite 33,62 cm |
-| Grün/Orange 50 %   | 50 %           | 50 %     | x 16,93 cm, Breite 16,93 cm | x 25,40 cm, Breite 25,40 cm |
-| Grün/Orange 33 %   | 66,19 %        | 33,81 %  | x 22,42 cm, Breite 11,45 cm | x 33,62 cm, Breite 17,18 cm |
+| Farbe 100 %        | 0 %            | 100 %    | x 0 cm, Breite 33,87 cm     | x 0 cm, Breite 50,80 cm     |
+| Farbe 66 %         | 33,81 %        | 66,19 %  | x 11,45 cm, Breite 22,42 cm | x 17,18 cm, Breite 33,62 cm |
+| Farbe 50 %         | 50 %           | 50 %     | x 16,93 cm, Breite 16,93 cm | x 25,40 cm, Breite 25,40 cm |
+| Farbe 33 %         | 66,19 %        | 33,81 %  | x 22,42 cm, Breite 11,45 cm | x 33,62 cm, Breite 17,18 cm |
 
-Alle Varianten einer Farbe nutzen dasselbe Bild (`gruen.png`, `orange.png`); der Viewer
+Die Tabelle gilt für alle Farben (Grün, Orange, Rot, Türkis).
+Alle Varianten einer Farbe nutzen dasselbe Bild (`gruen.png`, `orange.png`, `rot.png`, `tuerkis.png`); der Viewer
 schneidet den passenden Ausschnitt aus. Die Glasfläche bekommt die an den Folien
 gemessene Farbe (`glas` in `farben.js`). Der Reiter „Kapitel“ oben rechts wird nicht nachgebildet,
 dort zeigt der Viewer die normale abgerundete Ecke. Die Positionen der geteilten
@@ -30,6 +31,8 @@ Glasflächen stehen in `farben.js` (`x`, `glasX`, `nachbarBis`).
 |--------------|--------------------------------------------------------------|
 | `gruen.png`  | Randtextur Grün (Standard)                                   |
 | `orange.png` | Randtextur Orange                                            |
+| `rot.png`    | Randtextur Rot                                               |
+| `tuerkis.png`| Randtextur Türkis                                            |
 | `farben.js`  | Liste der Farben, die im Auswahlfeld erscheinen              |
 
 Dateinamen klein schreiben, ohne Umlaute und Leerzeichen. GitHub Pages unterscheidet
@@ -51,7 +54,11 @@ Groß- und Kleinschreibung.
    `x`, `glasX` und `nachbarBis` bleiben gleich, solange das Folienlayout gleich ist.
 
 `bild` ist der Dateiname ohne `.png`. `ersatz` ist die Farbe, die angezeigt wird,
-solange das Bild fehlt.
+solange das Bild fehlt. `glas` ist die an den Folien gemessene Farbe der Glasfläche.
+`schatten` (optional) ist die Deckkraft des Schattens für diese Farbe. PowerPoint
+mischt den Schatten in linearem Licht, der Browser in sRGB; bei kräftigen, dunkleren
+Rändern wirkt der Browser-Schatten deshalb zu hell. Gemessen: Rot 0,71, Türkis 0,66;
+Grün und Orange nutzen den Standard 0,6.
 
 ## Blättern in der Bildschirmpräsentation
 
@@ -74,4 +81,5 @@ Dafür gibt es:
 - Eckenradius 13 pt
 - Hintergrund weiß mit 92 % Deckkraft, 12 px Unschärfe dahinter (Milchglas)
 - Schatten: 6 pt nach unten, 12 pt Unschärfe, 60 % Deckkraft, an den Folien gemessen
-  (`--schatten-y`, `--schatten-blur`, `--schatten-alpha` oben in `viewer.html`)
+  (`--schatten-y`, `--schatten-blur`, `--schatten-alpha` oben in `viewer.html`);
+  die Deckkraft lässt sich je Farbe mit `schatten` in `farben.js` überschreiben

@@ -537,6 +537,9 @@
       root.setProperty('--gx', String(gx));
       root.setProperty('--nachbar-bis', String(nachbar));
       root.setProperty('--glas-farbe', f.glas || 'rgba(255,255,255,.92)');
+      // Deckkraft des Schattens je Farbe (ohne Angabe: --schatten-alpha aus dem Stylesheet)
+      if (f.schatten != null) root.setProperty('--schatten-alpha', String(f.schatten));
+      else root.removeProperty('--schatten-alpha');
       document.body.classList.toggle('ohne-nachbar', !(nachbar > 9 && nachbar <= x));
     }
 
