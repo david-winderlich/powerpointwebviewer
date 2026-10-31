@@ -18,12 +18,26 @@ mit dem Folienrand):
 | Farbe 50 %         | 50 %           | 50 %     | x 16,93 cm, Breite 16,93 cm | x 25,40 cm, Breite 25,40 cm |
 | Farbe 33 %         | 66,19 %        | 33,81 %  | x 22,42 cm, Breite 11,45 cm | x 33,62 cm, Breite 17,18 cm |
 
-Die Tabelle gilt für alle Farben (Grün, Orange, Rot, Türkis, Hellgrün, Violett, Indigo, Flieder, Grau).
-Alle Varianten einer Farbe nutzen dasselbe Bild (`gruen.png`, `orange.png`, `rot.png`, `tuerkis.png`, `hellgruen.png`, `violett.png`, `indigo.png`, `flieder.png`, `grau.png`); der Viewer
+Die Tabelle gilt für alle Farben (Grün, Orange, Rot, Türkis, Flieder, Grau, Blau).
+Alle Varianten einer Farbe nutzen dasselbe Bild (`gruen.png`, `orange.png`, `rot.png`, `tuerkis.png`, `flieder.png`, `grau.png`, `blau.png`); der Viewer
 schneidet den passenden Ausschnitt aus. Die Glasfläche bekommt die an den Folien
 gemessene Farbe (`glas` in `farben.js`). Der Reiter „Kapitel“ oben rechts wird nicht nachgebildet,
 dort zeigt der Viewer die normale abgerundete Ecke. Die Positionen der geteilten
 Glasflächen stehen in `farben.js` (`x`, `glasX`, `nachbarBis`).
+
+## Klassenfarben
+
+Jede Farbe gehört zu einer Klassenstufe:
+
+| Klasse  | Farbe   | Varianten-id |
+|---------|---------|--------------|
+| 5       | Rot     | `rot`        |
+| 6       | Orange  | `orange`     |
+| 7       | Grün    | `gruen`      |
+| 8       | Blau    | `blau`       |
+| 9       | Türkis  | `tuerkis`    |
+| 10      | Flieder | `flieder`    |
+| 11 + 12 | Grau    | `grau`       |
 
 ## Erwartete Dateien
 
@@ -33,11 +47,9 @@ Glasflächen stehen in `farben.js` (`x`, `glasX`, `nachbarBis`).
 | `orange.png` | Randtextur Orange                                            |
 | `rot.png`    | Randtextur Rot                                               |
 | `tuerkis.png`| Randtextur Türkis                                            |
-| `hellgruen.png` | Randtextur Hellgrün                                       |
-| `violett.png` | Randtextur Violett                                          |
-| `indigo.png` | Randtextur Indigo                                            |
 | `flieder.png` | Randtextur Flieder                                          |
 | `grau.png`   | Randtextur Grau                                              |
+| `blau.png`   | Randtextur Blau                                              |
 | `farben.js`  | Liste der Farben, die im Auswahlfeld erscheinen              |
 
 Dateinamen klein schreiben, ohne Umlaute und Leerzeichen. GitHub Pages unterscheidet
@@ -62,7 +74,7 @@ Groß- und Kleinschreibung.
 solange das Bild fehlt. `glas` ist die an den Folien gemessene Farbe der Glasfläche.
 `schatten` (optional) ist die Deckkraft des Schattens für diese Farbe. PowerPoint
 mischt den Schatten in linearem Licht, der Browser in sRGB; bei kräftigen, dunkleren
-Rändern wirkt der Browser-Schatten deshalb zu hell. Gemessen: Rot 0,71, Türkis 0,66, Hellgrün 0,68, Violett 0,66, Indigo 0,62, Flieder 0,69;
+Rändern wirkt der Browser-Schatten deshalb zu hell. Gemessen: Rot 0,71, Türkis 0,66, Flieder 0,69, Blau 0,69;
 Grün, Orange und Grau nutzen den Standard 0,6.
 
 ## Blättern in der Bildschirmpräsentation
