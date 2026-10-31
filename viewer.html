@@ -323,6 +323,8 @@
       outline: none;
     }
     .select:focus { border-color: #4a90d9; }
+    .select optgroup { color: #999; font-weight: 600; }
+    .select option { color: #333; font-weight: normal; }
 
     /* Error / status overlay */
     #overlay {
@@ -498,11 +500,25 @@
 
     function fillFarbeSelect() {
       farbeSelect.innerHTML = '';
+      // Abschnitte je Klassenstufe (graue Überschrift „Klasse …“, nicht anklickbar)
+      var gruppe = null, gruppeKlasse;
       FARBEN.forEach(function (f) {
+        var ziel = farbeSelect;
+        if (f.klasse) {
+          if (!gruppe || gruppeKlasse !== f.klasse) {
+            gruppe = document.createElement('optgroup');
+            gruppe.label = 'Klasse ' + f.klasse;
+            gruppeKlasse = f.klasse;
+            farbeSelect.appendChild(gruppe);
+          }
+          ziel = gruppe;
+        } else {
+          gruppe = null;
+        }
         var o = document.createElement('option');
         o.value = f.id;
         o.textContent = f.name || f.id;
-        farbeSelect.appendChild(o);
+        ziel.appendChild(o);
       });
       var o = document.createElement('option');
       o.value = OHNE_RAHMEN;

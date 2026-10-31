@@ -27,7 +27,8 @@ Glasflächen stehen in `farben.js` (`x`, `glasX`, `nachbarBis`).
 
 ## Klassenfarben
 
-Jede Farbe gehört zu einer Klassenstufe:
+Jede Farbe gehört zu einer Klassenstufe. Das Auswahlfeld zeigt die Farben in dieser Reihenfolge,
+je Klasse unter einer grauen Überschrift „Klasse …“ (Feld `klasse` in `farben.js`):
 
 | Klasse  | Farbe   | Varianten-id |
 |---------|---------|--------------|
@@ -66,7 +67,8 @@ Groß- und Kleinschreibung.
 
 1. Bild hochladen, z. B. `rand/blau.png`.
 2. In `farben.js` eine Zeile ergänzen:
-   `{ id: 'blau', name: 'Blau 100 %', bild: 'blau', ersatz: '#2f5f9e' },`
+   `{ klasse: '8', id: 'blau', name: 'Blau 100 %', bild: 'blau', ersatz: '#2f5f9e' },`
+   Die Zeile an die Stelle ihrer Klassenstufe setzen.
 3. Für geteilte Folien die Grün-Zeilen kopieren und `id`, `name` und `bild` anpassen;
    `x`, `glasX` und `nachbarBis` bleiben gleich, solange das Folienlayout gleich ist.
 

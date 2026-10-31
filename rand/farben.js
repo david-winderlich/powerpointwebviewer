@@ -1,6 +1,8 @@
 // Liste der Rahmen für den Viewer (Auswahlfeld in der Steuerleiste).
 //
 // Felder:
+//   klasse  Klassenstufe; das Auswahlfeld zeigt die Farben in Abschnitten
+//           „Klasse …“ (graue Überschrift, nicht anklickbar), in der Reihenfolge der Liste
 //   id      eindeutiger Name (klein, ohne Umlaute und Leerzeichen); wird pro Folie gespeichert
 //   name    Anzeige im Auswahlfeld
 //   bild    Randbild rand/<bild>.png (ohne Angabe: <id>.png)
@@ -26,32 +28,32 @@
 //   33 %: linke Fläche bis 630.9 pt, rechte ab 639.9 pt
 // x liegt jeweils in der Mitte der Lücke (bei 50 % genau auf der Folienmitte).
 window.RAHMEN_FARBEN = [
-  { id: 'gruen',     name: 'Grün 100 %',   bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2' },
-  { id: 'gruen-66',  name: 'Grün 66 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'gruen-50',  name: 'Grün 50 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'gruen-33',  name: 'Grün 33 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
-  { id: 'orange',    name: 'Orange 100 %', bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2' },
-  { id: 'orange-66', name: 'Orange 66 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'orange-50', name: 'Orange 50 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'orange-33', name: 'Orange 33 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
-  { id: 'rot',       name: 'Rot 100 %',    bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71 },
-  { id: 'rot-66',    name: 'Rot 66 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'rot-50',    name: 'Rot 50 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'rot-33',    name: 'Rot 33 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
-  { id: 'tuerkis',    name: 'Türkis 100 %', bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66 },
-  { id: 'tuerkis-66', name: 'Türkis 66 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'tuerkis-50', name: 'Türkis 50 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'tuerkis-33', name: 'Türkis 33 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
-  { id: 'flieder',    name: 'Flieder 100 %', bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69 },
-  { id: 'flieder-66', name: 'Flieder 66 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'flieder-50', name: 'Flieder 50 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'flieder-33', name: 'Flieder 33 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
-  { id: 'grau',    name: 'Grau 100 %', bild: 'grau', ersatz: '#535353', glas: '#fdfdfd' },
-  { id: 'grau-66', name: 'Grau 66 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'grau-50', name: 'Grau 50 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'grau-33', name: 'Grau 33 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
-  { id: 'blau',    name: 'Blau 100 %', bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69 },
-  { id: 'blau-66', name: 'Blau 66 %',  bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
-  { id: 'blau-50', name: 'Blau 50 %',  bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
-  { id: 'blau-33', name: 'Blau 33 %',  bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69, x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
+  { klasse: '5', id: 'rot',       name: 'Rot 100 %',    bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71 },
+  { klasse: '5', id: 'rot-66',    name: 'Rot 66 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '5', id: 'rot-50',    name: 'Rot 50 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '5', id: 'rot-33',    name: 'Rot 33 %',     bild: 'rot',    ersatz: '#e82b3c', glas: '#f7f2f3', schatten: 0.71, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { klasse: '6', id: 'orange',    name: 'Orange 100 %', bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2' },
+  { klasse: '6', id: 'orange-66', name: 'Orange 66 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '6', id: 'orange-50', name: 'Orange 50 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '6', id: 'orange-33', name: 'Orange 33 %',  bild: 'orange', ersatz: '#e07b2a', glas: '#f7f4f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { klasse: '7', id: 'gruen',     name: 'Grün 100 %',   bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2' },
+  { klasse: '7', id: 'gruen-66',  name: 'Grün 66 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '7', id: 'gruen-50',  name: 'Grün 50 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '7', id: 'gruen-33',  name: 'Grün 33 %',    bild: 'gruen',  ersatz: '#3f8f6b', glas: '#f2f6f2', x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { klasse: '8', id: 'blau',    name: 'Blau 100 %', bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69 },
+  { klasse: '8', id: 'blau-66', name: 'Blau 66 %',  bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '8', id: 'blau-50', name: 'Blau 50 %',  bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '8', id: 'blau-33', name: 'Blau 33 %',  bild: 'blau', ersatz: '#2b55bf', glas: '#f3f3f6', schatten: 0.69, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { klasse: '9', id: 'tuerkis',    name: 'Türkis 100 %', bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66 },
+  { klasse: '9', id: 'tuerkis-66', name: 'Türkis 66 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '9', id: 'tuerkis-50', name: 'Türkis 50 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '9', id: 'tuerkis-33', name: 'Türkis 33 %',  bild: 'tuerkis', ersatz: '#01d2da', glas: '#f2f7f7', schatten: 0.66, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { klasse: '10', id: 'flieder',    name: 'Flieder 100 %', bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69 },
+  { klasse: '10', id: 'flieder-66', name: 'Flieder 66 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '10', id: 'flieder-50', name: 'Flieder 50 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '10', id: 'flieder-33', name: 'Flieder 33 %',  bild: 'flieder', ersatz: '#7446bd', glas: '#f4f3f6', schatten: 0.69, x: 635.4, glasX: 639.9, nachbarBis: 630.9 },
+  { klasse: '11 + 12', id: 'grau',    name: 'Grau 100 %', bild: 'grau', ersatz: '#535353', glas: '#fdfdfd' },
+  { klasse: '11 + 12', id: 'grau-66', name: 'Grau 66 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 324.6, glasX: 329.1, nachbarBis: 320.1 },
+  { klasse: '11 + 12', id: 'grau-50', name: 'Grau 50 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 480,   glasX: 484.5, nachbarBis: 475.5 },
+  { klasse: '11 + 12', id: 'grau-33', name: 'Grau 33 %',  bild: 'grau', ersatz: '#535353', glas: '#fdfdfd', x: 635.4, glasX: 639.9, nachbarBis: 630.9 }
 ];
