@@ -32,12 +32,12 @@ je Klasse unter einer grauen Überschrift „Klasse …“ (Feld `klasse` in `fa
 
 | Klasse  | Farbe   | Varianten-id |
 |---------|---------|--------------|
-| 5       | Rot     | `rot`        |
-| 6       | Orange  | `orange`     |
+| 5       | Orange  | `orange`     |
+| 6       | Rot     | `rot`        |
 | 7       | Grün    | `gruen`      |
-| 8       | Blau    | `blau`       |
-| 9       | Türkis  | `tuerkis`    |
-| 10      | Flieder | `flieder`    |
+| 8       | Türkis  | `tuerkis`    |
+| 9       | Flieder | `flieder`    |
+| 10      | Blau    | `blau`       |
 | 11 + 12 | Grau    | `grau`       |
 
 ## Erwartete Dateien
@@ -67,7 +67,7 @@ Groß- und Kleinschreibung.
 
 1. Bild hochladen, z. B. `rand/blau.png`.
 2. In `farben.js` eine Zeile ergänzen:
-   `{ klasse: '8', id: 'blau', name: 'Blau 100 %', bild: 'blau', ersatz: '#2f5f9e' },`
+   `{ klasse: '10', id: 'blau', name: 'Blau 100 %', bild: 'blau', ersatz: '#2f5f9e' },`
    Die Zeile an die Stelle ihrer Klassenstufe setzen.
 3. Für geteilte Folien die Grün-Zeilen kopieren und `id`, `name` und `bild` anpassen;
    `x`, `glasX` und `nachbarBis` bleiben gleich, solange das Folienlayout gleich ist.
